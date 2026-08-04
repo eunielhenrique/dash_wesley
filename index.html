@@ -1,201 +1,311 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
+<title>Dashboard Meta Ads</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  html,body{margin:0;padding:0;background:#ffffff;}
-  a{color:#0052ff;text-decoration:none;}
-  a:hover{color:#003ecc;}
-  ::selection{background:#0052ff22;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#f7f7f7;font-family:Inter,-apple-system,system-ui,sans-serif;color:#0a0b0d}
+a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
+::-webkit-scrollbar{display:none}
+.mono{font-family:'JetBrains Mono',monospace}
+/* ---------- MOBILE ---------- */
+.app{width:100%;max-width:430px;min-height:100vh;background:#fff;margin:0 auto;display:flex;flex-direction:column}
+.app header{padding:18px 20px 14px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;background:#ffffffe6;backdrop-filter:blur(12px);z-index:5;border-bottom:1px solid #dee1e6}
+.hrow{display:flex;align-items:center;justify-content:space-between}
+.acct{display:flex;align-items:center;gap:11px;cursor:pointer}
+.avatar{width:32px;height:32px;border-radius:9999px;background:#0052ff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+.title{font-weight:600;font-size:15px;letter-spacing:-.2px}
+.sub{display:flex;align-items:center;gap:4px;font-size:12px;color:#5b616e}
+.period{font-size:12px;font-weight:600;background:#eef0f3;border-radius:100px;padding:6px 12px}
+.menu{position:absolute;top:64px;left:20px;background:#fff;border:1px solid #dee1e6;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:6px;min-width:180px;z-index:20;display:none;flex-direction:column;gap:2px}
+.menu.open{display:flex}
+.mi{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer}
+.mi:hover{background:#eef0f3}
+.mi .av{width:28px;height:28px;border-radius:9999px;background:#eef0f3;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.mi.sel{background:#eef0f3}.mi.sel .av{background:#0052ff;color:#fff}
+.mi span{font-size:14px}.mi.sel span{font-weight:600}
+.mi svg{margin-left:auto;display:none}.mi.sel svg{display:block}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kpi{background:#fff;border:1px solid #dee1e6;border-radius:16px;padding:10px 10px 9px}
+.kpi .l{font-size:10px;color:#7c828a;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.kpi .v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:13px;white-space:nowrap;margin-top:2px}
+.chips{display:flex;gap:8px;padding:14px 20px 4px;overflow-x:auto}
+.chip{border:none;background:#eef0f3;color:#0a0b0d;border-radius:100px;padding:9px 16px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap;cursor:pointer}
+.chip.on{background:#0052ff;color:#fff}
+.app main{flex:1;padding:14px 0 32px;display:flex;flex-direction:column;gap:16px}
+.mhead{display:flex;align-items:baseline;justify-content:space-between;padding:0 20px}
+.mhead b{font-weight:600;font-size:18px;letter-spacing:-.2px}
+.mhead small{font-size:12.5px;color:#5b616e}
+.rail{display:flex;gap:14px;overflow-x:auto;padding:0 20px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.card{background:#fff;border:1px solid #dee1e6;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;flex:0 0 330px;scroll-snap-align:start}
+.media{position:relative;width:100%;aspect-ratio:9/10;background:#eef0f3;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
+.media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.media .ph{color:#7c828a;font-size:13px;text-align:center;padding:0 30px}
+.media.over{outline:2px solid #0052ff;outline-offset:-2px}
+.rank{position:absolute;top:14px;left:14px;background:#0a0b0d;color:#fff;font-weight:700;font-size:14px;border-radius:100px;padding:6px 14px}
+.sw{position:absolute;top:14px;right:14px;width:58px;height:32px;border-radius:100px;background:#0052ff;cursor:pointer;transition:background .2s}
+.sw .kn{position:absolute;top:3px;left:29px;width:26px;height:26px;border-radius:9999px;background:#fff;transition:left .2s;box-shadow:0 1px 4px #0003}
+.sw.off{background:#a8acb3}.sw.off .kn{left:3px}
+.play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;width:64px;height:64px;border-radius:9999px;background:#0a0b0dcc;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center}
+.body{padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
+.hero{display:flex;align-items:center;justify-content:space-between;background:#eef0f3;border-radius:16px;padding:12px 16px}
+.hero span{font-size:14px;color:#5b616e;font-weight:500}
+.hero b{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px;color:#0052ff}
+.names{display:flex;flex-direction:column;gap:4px}
+.names .n{font-weight:600;font-size:16px;line-height:1.35}
+.names .c{font-size:13px;color:#7c828a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mx{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;border-top:1px solid #eef0f3;padding-top:14px}
+.mx .l{font-size:13px;color:#5b616e}
+.mx .v{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:15px;margin-top:2px}
+.foot{text-align:center;font-size:12px;color:#7c828a;padding:6px 20px 0}
+/* ---------- DESKTOP ---------- */
+.desk{display:none;min-height:100vh;background:#fff;flex-direction:column}
+.desk .dhead{display:flex;align-items:center;justify-content:space-between;padding:20px 36px;border-bottom:1px solid #dee1e6}
+.desk .brand{display:flex;align-items:center;gap:14px}
+.desk .brand .avatar{width:36px;height:36px;font-size:16px}
+.desk .brand .t{font-weight:700;font-size:17px;letter-spacing:-.01em}
+.desk .brand .s{font-size:13px;color:#5b616e}
+.desk .hright{display:flex;align-items:center;gap:12px}
+.desk .datebox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #dee1e6;border-radius:100px;padding:8px 14px;font-size:13.5px;color:#5b616e}
+.desk .activebadge{background:#0052ff14;border:1px solid #0052ff40;color:#0052ff;border-radius:100px;padding:8px 14px;font-size:13px;font-weight:600}
+.desk main{flex:1;padding:28px 36px;display:flex;flex-direction:column;gap:28px;max-width:1440px;width:100%;margin:0 auto}
+.dkpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.dkpi{background:#fff;border:1px solid #dee1e6;border-radius:24px;padding:20px 22px}
+.dkpi .l{font-size:13px;color:#5b616e;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.dkpi .v{font-weight:700;font-size:30px;letter-spacing:-.02em;margin:6px 0}
+.dkpi .s{font-size:13px;color:#5b616e}
+.charts{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.panel{background:#fff;border:1px solid #dee1e6;border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:14px}
+.panel .ph2{display:flex;align-items:baseline;justify-content:space-between}
+.panel .ph2 b{font-weight:600;font-size:16px}
+.panel .ph2 small{font-size:13px;color:#5b616e}
+.shares{display:flex;flex-direction:column;gap:14px;justify-content:center;flex:1}
+.share .row{display:flex;justify-content:space-between;font-size:13.5px;color:#5b616e;margin-bottom:5px}
+.share .bar{height:8px;background:#eef0f3;border-radius:4px;overflow:hidden}
+.share .fill{height:100%;background:#0052ff;border-radius:4px}
+.tablecard{background:#fff;border:1px solid #dee1e6;border-radius:24px;overflow:hidden}
+.tablecard .thead2{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 14px}
+.tablecard .thead2 b{font-weight:600;font-size:16px}
+.tablecard .thead2 small{font-size:13px;color:#5b616e}
+.trow{display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr .8fr .8fr;gap:0 12px;padding:14px 24px;align-items:center;font-size:14.5px;border-bottom:1px solid #eef0f3;cursor:pointer}
+.trow:hover{background:#f7f7f7}
+.trow.hd{padding:10px 24px;font-size:12px;font-weight:700;color:#5b616e;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #dee1e6;cursor:default}
+.trow.hd:hover{background:none}
+.trow .chev{color:#0052ff;font-size:12px}
+.trow .cname{display:flex;align-items:center;gap:10px}
+.trow .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.trow .obj{font-size:11.5px;color:#5b616e;background:#dee1e6;border-radius:5px;padding:2px 7px}
+.trow .num{text-align:right;color:#5b616e}
+.trow .num.b{color:#0a0b0d;font-weight:600}
+.sub2{background:#f7f7f7;border-bottom:1px solid #eef0f3;padding:6px 24px 18px}
+.arow{display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr .8fr .8fr;gap:0 12px;padding:8px 0;align-items:center;font-size:13.5px}
+.arow .an{color:#5b616e;font-weight:600;padding-left:18px}
+.arow .num{text-align:right;color:#5b616e}
+.creatives{display:flex;gap:12px;padding-left:62px;flex-wrap:wrap}
+.cr{background:#fff;border:1px solid #dee1e6;border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;min-width:280px}
+.cr .thumb{width:52px;height:52px;border-radius:8px;background:linear-gradient(135deg,#eef0f3,#dee1e6);display:flex;align-items:center;justify-content:center;color:#5b616e;font-size:10px;flex-shrink:0;text-align:center}
+.cr .cn{font-size:13.5px;font-weight:600}
+.cr .cs{font-size:12.5px;color:#5b616e;margin-top:3px}
+.dfoot{display:flex;justify-content:space-between;font-size:12.5px;color:#7c828a;padding-bottom:8px}
+@media (min-width:1024px){.app{display:none}.desk{display:flex}}
 </style>
-</helmet>
-<div style="min-height:100vh;background:#ffffff;color:#0a0b0d;font-family:Inter,-apple-system,system-ui,sans-serif;display:flex;flex-direction:column">
-  <header style="display:flex;align-items:center;justify-content:space-between;padding:20px 36px;border-bottom:1px solid #dee1e6">
-    <div style="display:flex;align-items:center;gap:14px">
-      <div style="width:36px;height:36px;border-radius:9999px;background:#0052ff;display:flex;align-items:center;justify-content:center;color:#ffffff;font-family:Inter,sans-serif;font-weight:800;font-size:16px">M</div>
+</head>
+<body>
+<!-- MOBILE -->
+<div class="app">
+<header>
+  <div class="hrow">
+    <div class="acct" id="acctBtn">
+      <div class="avatar" id="acctAv">E</div>
       <div>
-        <div style="font-family:Inter,sans-serif;font-weight:700;font-size:17px;letter-spacing:-0.01em">Relatório Meta Ads</div>
-        <div style="font-size:13px;color:#5b616e">{{ clientName }} · Conta 2984-4471</div>
+        <div class="title">Meta Ads</div>
+        <div class="sub"><span id="acctName">Elvis</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="display:flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #dee1e6;border-radius:100px;padding:8px 14px;font-size:13.5px;color:#5b616e">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        1 – 31 de julho de 2026
+    <div class="period">1–31 jul 2026</div>
+  </div>
+  <div class="menu" id="menu"></div>
+  <div class="kpis" id="kpis"></div>
+</header>
+<div class="chips" id="chips"></div>
+<main>
+  <div class="mhead"><b>Anúncios patrocinados</b><small><span id="count"></span> ativos · deslize →</small></div>
+  <div class="rail" id="rail"></div>
+  <div class="foot">Dados de exemplo · arraste imagens dos criativos para os cards</div>
+</main>
+</div>
+<!-- DESKTOP -->
+<div class="desk">
+  <div class="dhead">
+    <div class="brand">
+      <div class="avatar">M</div>
+      <div>
+        <div class="t">Relatório Meta Ads</div>
+        <div class="s"><span id="dAcct">Elvis</span> · Conta 2984-4471</div>
       </div>
-      <div style="background:#0052ff14;border:1px solid #0052ff40;color:#0052ff;border-radius:100px;padding:8px 14px;font-size:13px;font-weight:600">Campanhas ativas: 4</div>
     </div>
-  </header>
-
-  <main style="flex:1;padding:28px 36px;display:flex;flex-direction:column;gap:28px;max-width:1440px;width:100%;margin:0 auto;box-sizing:border-box">
-
-    <section style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
-        <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;padding:20px 22px;display:flex;flex-direction:column;gap:6px">
-          <div style="font-size:13px;color:#5b616e;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">{{ k.label }}</div>
-          <div style="font-family:Inter,sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.02em">{{ k.value }}</div>
-          <div style="font-size:13px;color:#5b616e">{{ k.sub }}</div>
-        </div>
-      </sc-for>
-    </section>
-
-    <section style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px">
-      <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:14px">
-        <div style="display:flex;align-items:baseline;justify-content:space-between">
-          <div style="font-family:Inter,sans-serif;font-weight:600;font-size:16px">Investimento diário</div>
-          <div style="font-size:13px;color:#5b616e">julho 2026</div>
-        </div>
-        <div style="flex:1;min-height:220px">{{ spendChart }}</div>
+    <div class="hright">
+      <div class="datebox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>1 – 31 de julho de 2026</div>
+      <div class="activebadge">Campanhas ativas: 4</div>
+    </div>
+  </div>
+  <main>
+    <div class="dkpis" id="dkpis"></div>
+    <div class="charts">
+      <div class="panel">
+        <div class="ph2"><b>Investimento diário</b><small>julho 2026</small></div>
+        <div style="flex:1;min-height:220px" id="chart"></div>
       </div>
-      <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:14px">
-        <div style="font-family:Inter,sans-serif;font-weight:600;font-size:16px">Investimento por campanha</div>
-        <div style="display:flex;flex-direction:column;gap:14px;justify-content:center;flex:1">
-          <sc-for list="{{ campaignShare }}" as="c" hint-placeholder-count="4">
-            <div style="display:flex;flex-direction:column;gap:5px">
-              <div style="display:flex;justify-content:space-between;font-size:13.5px">
-                <span style="color:#5b616e">{{ c.name }}</span>
-                <span style="color:#5b616e">{{ c.amount }}</span>
-              </div>
-              <div style="height:8px;background:#eef0f3;border-radius:4px;overflow:hidden">
-                <div style="height:100%;background:#0052ff;border-radius:4px;width:{{ c.pct }}"></div>
-              </div>
-            </div>
-          </sc-for>
-        </div>
+      <div class="panel">
+        <div class="ph2"><b>Investimento por campanha</b></div>
+        <div class="shares" id="shares"></div>
       </div>
-    </section>
-
-    <section style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 14px">
-        <div style="font-family:Inter,sans-serif;font-weight:600;font-size:16px">Campanhas</div>
-        <div style="font-size:13px;color:#5b616e">Clique para ver conjuntos e anúncios</div>
-      </div>
-      <div style="display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr 0.8fr 0.8fr;gap:0 12px;padding:10px 24px;font-size:12px;font-weight:700;color:#5b616e;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid #dee1e6">
-        <div></div><div>Campanha</div><div style="text-align:right">Investimento</div><div style="text-align:right">Impressões</div><div style="text-align:right">Alcance</div><div style="text-align:right">CPC</div><div style="text-align:right">CPM</div>
-      </div>
-      <sc-for list="{{ campaigns }}" as="camp" hint-placeholder-count="4">
-        <div>
-          <div onClick="{{ camp.toggle }}" style="display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr 0.8fr 0.8fr;gap:0 12px;padding:14px 24px;align-items:center;font-size:14.5px;border-bottom:1px solid #eef0f3;cursor:pointer" style-hover="background:#f7f7f7">
-            <div style="color:#0052ff;font-size:12px;font-family:Sora,sans-serif">{{ camp.chevron }}</div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="width:8px;height:8px;border-radius:50%;background:{{ camp.dotColor }};flex-shrink:0"></span>
-              <span style="font-weight:600;color:#0a0b0d">{{ camp.name }}</span>
-              <span style="font-size:11.5px;color:#5b616e;background:#dee1e6;border-radius:5px;padding:2px 7px">{{ camp.objective }}</span>
-            </div>
-            <div style="text-align:right;font-weight:600">{{ camp.spend }}</div>
-            <div style="text-align:right;color:#5b616e">{{ camp.impressions }}</div>
-            <div style="text-align:right;color:#5b616e">{{ camp.reach }}</div>
-            <div style="text-align:right;color:#5b616e">{{ camp.cpc }}</div>
-            <div style="text-align:right;color:#5b616e">{{ camp.cpm }}</div>
-          </div>
-          <sc-if value="{{ camp.open }}" hint-placeholder-val="{{ false }}">
-            <div style="background:#f7f7f7;border-bottom:1px solid #eef0f3;padding:6px 24px 18px 24px">
-              <sc-for list="{{ camp.adsets }}" as="aset" hint-placeholder-count="2">
-                <div style="margin-top:12px">
-                  <div style="display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr 0.8fr 0.8fr;gap:0 12px;padding:8px 0;align-items:center;font-size:13.5px">
-                    <div></div>
-                    <div style="color:#5b616e;font-weight:600;padding-left:18px">▸ {{ aset.name }}</div>
-                    <div style="text-align:right;color:#5b616e">{{ aset.spend }}</div>
-                    <div style="text-align:right;color:#5b616e">{{ aset.impressions }}</div>
-                    <div style="text-align:right;color:#5b616e">{{ aset.reach }}</div>
-                    <div style="text-align:right;color:#5b616e">{{ aset.cpc }}</div>
-                    <div style="text-align:right;color:#5b616e">{{ aset.cpm }}</div>
-                  </div>
-                  <div style="display:flex;gap:12px;padding-left:62px;flex-wrap:wrap">
-                    <sc-for list="{{ aset.ads }}" as="ad" hint-placeholder-count="2">
-                      <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;min-width:280px">
-                        <div style="width:52px;height:52px;border-radius:8px;background:linear-gradient(135deg,#eef0f3,#dee1e6);display:flex;align-items:center;justify-content:center;color:#5b616e;font-size:10px;flex-shrink:0;text-align:center">criativo</div>
-                        <div style="display:flex;flex-direction:column;gap:3px">
-                          <div style="font-size:13.5px;font-weight:600;color:#0a0b0d">{{ ad.name }}</div>
-                          <div style="font-size:12.5px;color:#5b616e">{{ ad.stats }}</div>
-                        </div>
-                      </div>
-                    </sc-for>
-                  </div>
-                </div>
-              </sc-for>
-            </div>
-          </sc-if>
-        </div>
-      </sc-for>
-    </section>
-
-    <footer style="display:flex;justify-content:space-between;font-size:12.5px;color:#7c828a;padding-bottom:8px">
-      <span>Dados de exemplo — substitua por um export do Gerenciador de Anúncios</span>
-      <span>Gerado em 03/08/2026</span>
-    </footer>
+    </div>
+    <div class="tablecard">
+      <div class="thead2"><b>Campanhas</b><small>Clique para ver conjuntos e anúncios</small></div>
+      <div class="trow hd"><div></div><div>Campanha</div><div class="num">Investimento</div><div class="num">Impressões</div><div class="num">Alcance</div><div class="num">CPC</div><div class="num">CPM</div></div>
+      <div id="tbody"></div>
+    </div>
+    <div class="dfoot"><span>Dados de exemplo — substitua por um export do Gerenciador de Anúncios</span><span>Gerado em 04/08/2026</span></div>
   </main>
 </div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;clientName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Cliente Exemplo&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
-class Component extends DCLogic {
-  state = { open: {} };
-  renderVals() {
-    const fmtBRL = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    const fmtN = v => v.toLocaleString('pt-BR');
-    const data = [
-      {name:'Conversões — Coleção Inverno', objective:'Vendas', spend:5840.32, imp:412300, reach:198450, ads:[
-        {name:'Público frio — Lookalike 1%', spend:3210.10, imp:228400, reach:112300, creatives:[
-          {name:'Vídeo 15s — Casaco', imp:141200, cpc:1.42},
-          {name:'Carrossel — 4 looks', imp:87200, cpc:1.68}]},
-        {name:'Remarketing 30 dias', spend:2630.22, imp:183900, reach:86150, creatives:[
-          {name:'Estático — Oferta 20%', imp:98700, cpc:0.94},
-          {name:'Vídeo depoimento', imp:85200, cpc:1.12}]}]},
-      {name:'Tráfego — Blog e conteúdo', objective:'Tráfego', spend:2310.75, imp:389100, reach:241800, ads:[
-        {name:'Interesses — Moda sustentável', spend:2310.75, imp:389100, reach:241800, creatives:[
-          {name:'Estático — Guia de estilo', imp:212300, cpc:0.58},
-          {name:'Reels — Bastidores', imp:176800, cpc:0.61}]}]},
-      {name:'Reconhecimento — Marca', objective:'Alcance', spend:1980.00, imp:602400, reach:418200, ads:[
-        {name:'Amplo 18-54 BR', spend:1980.00, imp:602400, reach:418200, creatives:[
-          {name:'Vídeo institucional 30s', imp:602400, cpc:2.10}]}]},
-      {name:'Engajamento — Lançamento', objective:'Engajamento', spend:1265.40, imp:184500, reach:96300, ads:[
-        {name:'Seguidores + envolvidos', spend:1265.40, imp:184500, reach:96300, creatives:[
-          {name:'Reels — Teaser lançamento', imp:110700, cpc:0.72},
-          {name:'Estático — Contagem regressiva', imp:73800, cpc:0.88}]}]}
-    ];
-    const totSpend = data.reduce((a,c)=>a+c.spend,0);
-    const totImp = data.reduce((a,c)=>a+c.imp,0);
-    const totReach = data.reduce((a,c)=>a+c.reach,0);
-    const clicks = 8942;
-    const kpis = [
-      {label:'Investimento', value:fmtBRL(totSpend), sub:'total no período'},
-      {label:'Impressões', value:fmtN(totImp), sub:'freq. média 2,1'},
-      {label:'Alcance', value:fmtN(totReach), sub:'pessoas únicas'},
-      {label:'CPC / CPM', value:fmtBRL(totSpend/clicks).replace('R$ ','R$ ')+' / '+fmtBRL(totSpend/totImp*1000), sub:fmtN(clicks)+' cliques'}
-    ];
-    const dotColors = ['#0052ff','#05b169','#f4b000','#cf202f'];
-    const campaigns = data.map((c,i)=>({
-      name:c.name, objective:c.objective, dotColor:dotColors[i%4],
-      spend:fmtBRL(c.spend), impressions:fmtN(c.imp), reach:fmtN(c.reach),
-      cpc:fmtBRL(c.spend/(c.imp*0.021)), cpm:fmtBRL(c.spend/c.imp*1000),
-      open:!!this.state.open[i], chevron:this.state.open[i]?'▼':'▶',
-      toggle:()=>this.setState(s=>({open:{...s.open,[i]:!s.open[i]}})),
-      adsets:c.ads.map(a=>({
-        name:a.name, spend:fmtBRL(a.spend), impressions:fmtN(a.imp), reach:fmtN(a.reach),
-        cpc:fmtBRL(a.spend/(a.imp*0.021)), cpm:fmtBRL(a.spend/a.imp*1000),
-        ads:a.creatives.map(cr=>({name:cr.name, stats:fmtN(cr.imp)+' impressões · CPC '+fmtBRL(cr.cpc)}))
-      }))
-    }));
-    const campaignShare = data.map(c=>({name:c.name.split(' — ')[1]||c.name, amount:fmtBRL(c.spend), pct:(c.spend/totSpend*100).toFixed(1)+'%'}));
-    // daily spend bar chart (31 days)
-    const seed = [310,342,298,371,405,388,352,341,367,392,418,376,349,362,401,435,412,388,357,371,396,428,447,419,383,364,392,417,441,406,372];
-    const max = Math.max(...seed);
-    const W=760, H=220, bw=W/31;
-    const bars = seed.map((v,i)=>React.createElement('rect',{key:i,x:i*bw+2,y:H-28-(v/max)*(H-48),width:bw-4,height:(v/max)*(H-48),rx:3,fill:i===22?'#0052ff':'#dee1e6'}));
-    const labels = [0,6,13,20,27,30].map(i=>React.createElement('text',{key:'l'+i,x:i*bw+bw/2,y:H-8,fill:'#7c828a',fontSize:11,textAnchor:'middle',fontFamily:"Inter,sans-serif"},String(i+1)+'/07'));
-    const peak = React.createElement('text',{x:22*bw+bw/2,y:H-32-(seed[22]/max)*(H-48)-8,fill:'#0052ff',fontSize:12,fontWeight:700,textAnchor:'middle',fontFamily:"Inter,sans-serif"},'R$ 447');
-    const spendChart = React.createElement('svg',{viewBox:`0 0 ${W} ${H}`,style:{width:'100%',height:'100%',display:'block'}},...bars,...labels,peak);
-    return { clientName: this.props.clientName ?? 'Cliente Exemplo', kpis, campaigns, campaignShare, spendChart };
-  }
+<script>
+const ads=[
+{id:'ad-inverno-video',name:'[LOJA360][Alcance][IG] Casaco \u2014 Cole\u00e7\u00e3o Inverno (fim 03-08)',campaign:'[LOJA360][Alcance][IG] Casaco \u2014 Cole\u00e7\u00e3o Inverno (\u2026)',adset:'[LOJA360][Alcance][IG][Grande SP] Casaco \u2014 Inverno',format:'REELS',spend:148.25,imp:103603,reach:102056,clicks:49,linkClicks:0,revenue:0},
+{id:'ad-depoimento',name:'[LOJA360][Convers\u00f5es][IG] Depoimento \u2014 Cliente real',campaign:'[LOJA360][Convers\u00f5es][IG] Depoimento \u2014 Cliente (\u2026)',adset:'[LOJA360][Convers\u00f5es][IG][Remarketing 30d] Depoimento',format:'FEED',spend:1290.55,imp:85200,reach:41300,clicks:1152,linkClicks:874,revenue:8420},
+{id:'ad-bastidores',name:'[LOJA360][Tr\u00e1fego][IG] Reels \u2014 Bastidores da produ\u00e7\u00e3o',campaign:'[LOJA360][Tr\u00e1fego][IG] Reels \u2014 Bastidores (\u2026)',adset:'[LOJA360][Tr\u00e1fego][IG][Interesses] Moda sustent\u00e1vel',format:'REELS',spend:980.30,imp:176800,reach:112600,clicks:1607,linkClicks:1490,revenue:0},
+{id:'ad-institucional',name:'[LOJA360][Marca][IG] V\u00eddeo institucional 30s',campaign:'[LOJA360][Marca][IG] V\u00eddeo institucional (\u2026)',adset:'[LOJA360][Marca][IG][Amplo 18-54 BR] Institucional',format:'STORIES',spend:1980,imp:602400,reach:418200,clicks:943,linkClicks:611,revenue:0},
+{id:'ad-teaser',name:'[LOJA360][Engajamento][IG] Reels \u2014 Teaser do lan\u00e7amento',campaign:'[LOJA360][Engajamento][IG] Teaser \u2014 Lan\u00e7amento (\u2026)',adset:'[LOJA360][Engajamento][IG][Envolvidos] Teaser',format:'REELS',spend:720.15,imp:110700,reach:58900,clicks:1000,linkClicks:702,revenue:0},
+{id:'ad-oferta20',name:'[LOJA360][Convers\u00f5es][IG] Est\u00e1tico \u2014 Oferta 20% OFF',campaign:'[LOJA360][Convers\u00f5es][IG] Oferta 20% (\u2026)',adset:'[LOJA360][Convers\u00f5es][IG][Remarketing 7d] Oferta',format:'FEED',spend:640.80,imp:98700,reach:52300,clicks:1420,linkClicks:1180,revenue:5210},
+{id:'ad-lookbook',name:'[LOJA360][Tr\u00e1fego][IG] Carrossel \u2014 Lookbook 4 pe\u00e7as',campaign:'[LOJA360][Tr\u00e1fego][IG] Lookbook (\u2026)',adset:'[LOJA360][Tr\u00e1fego][IG][Lookalike 2%] Lookbook',format:'FEED',spend:512.40,imp:87200,reach:61800,clicks:890,linkClicks:764,revenue:0},
+{id:'ad-stories-flash',name:'[LOJA360][Convers\u00f5es][IG] Stories \u2014 Flash sale 24h',campaign:'[LOJA360][Convers\u00f5es][IG] Flash sale (\u2026)',adset:'[LOJA360][Convers\u00f5es][IG][Envolvidos 14d] Flash',format:'STORIES',spend:389.90,imp:64500,reach:48200,clicks:720,linkClicks:655,revenue:3140},
+{id:'ad-unboxing',name:'[LOJA360][Engajamento][IG] Reels \u2014 Unboxing influencer',campaign:'[LOJA360][Engajamento][IG] Unboxing (\u2026)',adset:'[LOJA360][Engajamento][IG][Seguidores] Unboxing',format:'REELS',spend:298.60,imp:142300,reach:97400,clicks:1810,linkClicks:340,revenue:0}
+].sort((a,b)=>b.spend-a.spend);
+const camps=[
+{name:'Convers\u00f5es \u2014 Cole\u00e7\u00e3o Inverno',obj:'Vendas',spend:5840.32,imp:412300,reach:198450,adsets:[
+ {name:'P\u00fablico frio \u2014 Lookalike 1%',spend:3210.10,imp:228400,reach:112300,creatives:[{name:'V\u00eddeo 15s \u2014 Casaco',imp:141200,cpc:1.42},{name:'Carrossel \u2014 4 looks',imp:87200,cpc:1.68}]},
+ {name:'Remarketing 30 dias',spend:2630.22,imp:183900,reach:86150,creatives:[{name:'Est\u00e1tico \u2014 Oferta 20%',imp:98700,cpc:.94},{name:'V\u00eddeo depoimento',imp:85200,cpc:1.12}]}]},
+{name:'Tr\u00e1fego \u2014 Blog e conte\u00fado',obj:'Tr\u00e1fego',spend:2310.75,imp:389100,reach:241800,adsets:[
+ {name:'Interesses \u2014 Moda sustent\u00e1vel',spend:2310.75,imp:389100,reach:241800,creatives:[{name:'Est\u00e1tico \u2014 Guia de estilo',imp:212300,cpc:.58},{name:'Reels \u2014 Bastidores',imp:176800,cpc:.61}]}]},
+{name:'Reconhecimento \u2014 Marca',obj:'Alcance',spend:1980,imp:602400,reach:418200,adsets:[
+ {name:'Amplo 18-54 BR',spend:1980,imp:602400,reach:418200,creatives:[{name:'V\u00eddeo institucional 30s',imp:602400,cpc:2.10}]}]},
+{name:'Engajamento \u2014 Lan\u00e7amento',obj:'Engajamento',spend:1265.40,imp:184500,reach:96300,adsets:[
+ {name:'Seguidores + envolvidos',spend:1265.40,imp:184500,reach:96300,creatives:[{name:'Reels \u2014 Teaser lan\u00e7amento',imp:110700,cpc:.72},{name:'Est\u00e1tico \u2014 Contagem regressiva',imp:73800,cpc:.88}]}]}
+];
+const brl=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const int=v=>v.toLocaleString('pt-BR');
+const pct=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+const dec=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const kmil=v=>v>=1000?(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil':String(v);
+let filter='Todos',account=localStorage.getItem('ma-account')||'Elvis';
+const off={},open={};
+const imgs=JSON.parse(localStorage.getItem('ma-imgs')||'{}');
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+/* mobile */
+function kpis(){
+  const ts=ads.reduce((s,a)=>s+a.spend,0),ti=ads.reduce((s,a)=>s+a.imp,0),tr=ads.reduce((s,a)=>s+a.reach,0);
+  document.getElementById('kpis').innerHTML=[['Gasto',brl(ts).replace(',00','')],['Impress.',kmil(ti)],['Alcance',kmil(tr)],['CPM',brl(ts/ti*1000)]]
+    .map(k=>`<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('');
 }
+function chips(){
+  document.getElementById('chips').innerHTML=['Todos','REELS','FEED','STORIES']
+    .map(f=>`<button class="chip${filter===f?' on':''}" data-f="${f}">${f==='Todos'?'Todos':f[0]+f.slice(1).toLowerCase()}</button>`).join('');
+}
+function cards(){
+  const shown=ads.filter(a=>filter==='Todos'||a.format===filter);
+  document.getElementById('count').textContent=shown.length;
+  document.getElementById('rail').innerHTML=shown.map((a,i)=>{
+    const cpr=a.linkClicks>0?a.spend/a.linkClicks:0;
+    const m=[['Gasto',brl(a.spend)],['Impress\u00f5es',int(a.imp)],['Alcance',int(a.reach)],['Frequ\u00eancia',dec(a.imp/a.reach)],['Cliques',int(a.clicks)],['Cliques no Link',int(a.linkClicks)],['CPM',brl(a.spend/a.imp*1000)],['CPC',a.clicks?brl(a.spend/a.clicks):brl(0)],['CPC Link',a.linkClicks?brl(a.spend/a.linkClicks):brl(0)],['CTR',pct(a.clicks/a.imp*100)],['CTR Link',pct(a.linkClicks/a.imp*100)],['CPR',brl(cpr)],['Receita',brl(a.revenue)],['ROAS',dec(a.spend?a.revenue/a.spend:0)+'x']];
+    const img=imgs[a.id]?`<img src="${imgs[a.id]}" alt="">`:`<div class="ph">Arraste o criativo do v\u00eddeo aqui<br>ou clique para escolher</div>`;
+    return `<article class="card"><div class="media" data-id="${a.id}">${img}
+      <div class="rank">#${i+1}</div>
+      <div class="sw${off[a.id]?' off':''}" data-sw="${a.id}"><div class="kn"></div></div>
+      <div class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+    <div class="body">
+      <div class="hero"><span>CPR</span><b>${brl(cpr)}</b></div>
+      <div class="names"><div class="n">${esc(a.name)}</div><div class="c">${esc(a.campaign)}</div><div class="c">${esc(a.adset)}</div></div>
+      <div class="mx">${m.map(x=>`<div><div class="l">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('')}</div>
+    </div></article>`;
+  }).join('');
+}
+function menu(){
+  document.getElementById('menu').innerHTML=['Elvis','Wesley'].map(n=>`<div class="mi${n===account?' sel':''}" data-acc="${n}"><div class="av">${n[0]}</div><span>${n}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>`).join('');
+  document.getElementById('acctName').textContent=account;
+  document.getElementById('acctAv').textContent=account[0];
+  document.getElementById('dAcct').textContent=account;
+}
+/* desktop */
+function dkpis(){
+  const ts=camps.reduce((s,c)=>s+c.spend,0),ti=camps.reduce((s,c)=>s+c.imp,0),tr=camps.reduce((s,c)=>s+c.reach,0),clicks=8942;
+  document.getElementById('dkpis').innerHTML=[
+    ['Investimento',brl(ts),'total no per\u00edodo'],
+    ['Impress\u00f5es',int(ti),'freq. m\u00e9dia 2,1'],
+    ['Alcance',int(tr),'pessoas \u00fanicas'],
+    ['CPC / CPM',brl(ts/clicks)+' / '+brl(ts/ti*1000),int(clicks)+' cliques']
+  ].map(k=>`<div class="dkpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
+}
+function chart(){
+  const seed=[310,342,298,371,405,388,352,341,367,392,418,376,349,362,401,435,412,388,357,371,396,428,447,419,383,364,392,417,441,406,372];
+  const max=Math.max(...seed),W=760,H=220,bw=W/31;
+  let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;display:block">`;
+  seed.forEach((v,i)=>{s+=`<rect x="${(i*bw+2).toFixed(1)}" y="${(H-28-(v/max)*(H-48)).toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${((v/max)*(H-48)).toFixed(1)}" rx="3" fill="${i===22?'#0052ff':'#dee1e6'}"/>`});
+  [0,6,13,20,27,30].forEach(i=>{s+=`<text x="${(i*bw+bw/2).toFixed(1)}" y="${H-8}" fill="#7c828a" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">${i+1}/07</text>`});
+  s+=`<text x="${(22*bw+bw/2).toFixed(1)}" y="${(H-32-(seed[22]/max)*(H-48)-8).toFixed(1)}" fill="#0052ff" font-size="12" font-weight="700" text-anchor="middle" font-family="Inter,sans-serif">R$ 447</text></svg>`;
+  document.getElementById('chart').innerHTML=s;
+}
+function shares(){
+  const ts=camps.reduce((s,c)=>s+c.spend,0);
+  document.getElementById('shares').innerHTML=camps.map(c=>`<div class="share"><div class="row"><span>${c.name.split(' \u2014 ')[1]||c.name}</span><span>${brl(c.spend)}</span></div><div class="bar"><div class="fill" style="width:${(c.spend/ts*100).toFixed(1)}%"></div></div></div>`).join('');
+}
+function table(){
+  const dots=['#0052ff','#05b169','#f4b000','#cf202f'];
+  document.getElementById('tbody').innerHTML=camps.map((c,i)=>{
+    let h=`<div class="trow" data-c="${i}"><div class="chev">${open[i]?'\u25bc':'\u25b6'}</div>
+      <div class="cname"><span class="dot" style="background:${dots[i%4]}"></span><span style="font-weight:600">${c.name}</span><span class="obj">${c.obj}</span></div>
+      <div class="num b">${brl(c.spend)}</div><div class="num">${int(c.imp)}</div><div class="num">${int(c.reach)}</div><div class="num">${brl(c.spend/(c.imp*.021))}</div><div class="num">${brl(c.spend/c.imp*1000)}</div></div>`;
+    if(open[i]){
+      h+=`<div class="sub2">`+c.adsets.map(a=>`<div style="margin-top:12px">
+        <div class="arow"><div></div><div class="an">\u25b8 ${a.name}</div><div class="num">${brl(a.spend)}</div><div class="num">${int(a.imp)}</div><div class="num">${int(a.reach)}</div><div class="num">${brl(a.spend/(a.imp*.021))}</div><div class="num">${brl(a.spend/a.imp*1000)}</div></div>
+        <div class="creatives">${a.creatives.map(cr=>`<div class="cr"><div class="thumb">criativo</div><div><div class="cn">${cr.name}</div><div class="cs">${int(cr.imp)} impress\u00f5es \u00b7 CPC ${brl(cr.cpc)}</div></div></div>`).join('')}</div>
+      </div>`).join('')+`</div>`;
+    }
+    return h;
+  }).join('');
+}
+/* events */
+document.addEventListener('click',e=>{
+  const chip=e.target.closest('.chip');
+  if(chip){filter=chip.dataset.f;chips();cards();return}
+  const sw=e.target.closest('[data-sw]');
+  if(sw){const id=sw.dataset.sw;off[id]=!off[id];sw.classList.toggle('off',!!off[id]);return}
+  if(e.target.closest('#acctBtn')){document.getElementById('menu').classList.toggle('open');return}
+  const mi=e.target.closest('.mi');
+  if(mi){account=mi.dataset.acc;localStorage.setItem('ma-account',account);menu();document.getElementById('menu').classList.remove('open');return}
+  if(!e.target.closest('#menu'))document.getElementById('menu').classList.remove('open');
+  const tr=e.target.closest('.trow:not(.hd)');
+  if(tr){const i=tr.dataset.c;open[i]=!open[i];table();return}
+  const media=e.target.closest('.media');
+  if(media){
+    const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+    inp.onchange=()=>{if(inp.files[0])ingest(inp.files[0],media.dataset.id)};inp.click();
+  }
+});
+function ingest(file,id){
+  const r=new FileReader();
+  r.onload=()=>{imgs[id]=r.result;try{localStorage.setItem('ma-imgs',JSON.stringify(imgs))}catch(e){}cards()};
+  r.readAsDataURL(file);
+}
+document.addEventListener('dragover',e=>{const m=e.target.closest&&e.target.closest('.media');if(m){e.preventDefault();m.classList.add('over')}});
+document.addEventListener('dragleave',e=>{const m=e.target.closest&&e.target.closest('.media');if(m)m.classList.remove('over')});
+document.addEventListener('drop',e=>{const m=e.target.closest&&e.target.closest('.media');if(m){e.preventDefault();m.classList.remove('over');const f=e.dataTransfer.files[0];if(f)ingest(f,m.dataset.id)}});
+kpis();chips();cards();menu();dkpis();chart();shares();table();
 </script>
 </body>
 </html>
