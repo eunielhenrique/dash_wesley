@@ -44,18 +44,21 @@ São recortes diferentes e a tela mostra os dois separados:
 Usar a contagem de linhas da tabela como "campanhas ativas" seria errado nos dois
 sentidos: conta pausadas e ignora ativas sem gasto.
 
-### Variáveis de ambiente
+### Variável de ambiente
 
-Configure em Project Settings → Environment Variables, na Vercel:
+Só uma, em Project Settings → Environment Variables na Vercel:
 
 | Variável | Valor |
 |---|---|
-| `META_ACCESS_TOKEN` | token com permissão `ads_read` nas duas contas |
-| `META_AD_ACCOUNT_GOV360` | `act_XXXXXXXXXXXXXXX` da conta Gov360 |
-| `META_AD_ACCOUNT_WESLEY` | `act_XXXXXXXXXXXXXXX` da conta do Wesley |
+| `META_ACCESS_TOKEN` | token de Usuário do Sistema com `ads_read` nas duas contas |
 
-Faltando qualquer uma, a API responde 503 e a página mostra o motivo — nunca
-cai para número inventado.
+Os IDs das contas já são padrão no código (`api/insights.js`), porque ID de conta
+de anúncio não é credencial — sozinho não dá acesso a nada. Para apontar para
+outras contas sem mexer no código, defina `META_AD_ACCOUNT_GOV360` e/ou
+`META_AD_ACCOUNT_WESLEY`; a env var tem prioridade sobre o padrão.
+
+Sem o token a API responde 503 e a página mostra o motivo — nunca cai para
+número inventado.
 
 ## Testes
 

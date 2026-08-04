@@ -57,6 +57,10 @@ let r = await run({ META_ACCESS_TOKEN:'', META_AD_ACCOUNT_GOV360:'' }, {account:
 check('responde 503 em vez de fingir dado', r.code===503, r.code);
 check('mensagem aponta a variável que falta', /META_ACCESS_TOKEN/.test(r.body.error), r.body.error);
 
+console.log('\n[1b] token configurado, conta sem env var');
+r = await run({ META_ACCESS_TOKEN:'t', META_AD_ACCOUNT_GOV360:'' }, {account:'gov360'});
+check('usa o ID padrão em vez de exigir env var', r.code===200, r.code+' '+JSON.stringify(r.body).slice(0,60));
+
 console.log('\n[2] conta inexistente');
 r = await run({ META_ACCESS_TOKEN:'t' }, {account:'elvis'});
 check('responde 400', r.code===400, r.code);

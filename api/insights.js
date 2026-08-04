@@ -8,9 +8,12 @@
 
 const API = 'https://graph.facebook.com/v20.0';
 
+// ID de conta de anúncio não é credencial — sozinho não dá acesso a nada. Fica
+// aqui como padrão para que só o token precise ser configurado; a env var, se
+// existir, tem prioridade (troca de conta sem mexer no código).
 const ACCOUNTS = {
-  gov360: { label: 'Gov360', env: 'META_AD_ACCOUNT_GOV360' },
-  wesley: { label: 'Wesley', env: 'META_AD_ACCOUNT_WESLEY' },
+  gov360: { label: 'Gov360', env: 'META_AD_ACCOUNT_GOV360', id: 'act_531444469411947' },
+  wesley: { label: 'Wesley', env: 'META_AD_ACCOUNT_WESLEY', id: 'act_902191367681121' },
 };
 
 // Objetivos da Meta -> rótulo curto que a tabela do desktop mostra.
@@ -87,7 +90,7 @@ export default async function handler(req, res) {
   if (!token) {
     return res.status(503).json({ error: 'META_ACCESS_TOKEN não configurado neste projeto.' });
   }
-  const actId = process.env[account.env];
+  const actId = process.env[account.env] || account.id;
   if (!actId) {
     return res.status(503).json({ error: `${account.env} não configurado neste projeto.` });
   }
