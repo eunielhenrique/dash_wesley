@@ -30,19 +30,31 @@ enxerga os números agregados.
 Contas disponíveis no seletor: **Gov360** e **Wesley**. Trocar de conta refaz a
 chamada. A janela padrão é de 30 dias (`/api/insights?account=gov360&days=30`).
 
-### Veiculando agora ≠ entrega no período
+### De onde vem a hierarquia
 
-São recortes diferentes e a tela mostra os dois separados:
+Campanha → conjunto → anúncio vem das **entidades** (`/campaigns`, `/adsets`,
+`/ads`), não dos insights. Insights só enxergam quem teve entrega, então um
+anúncio no ar que ainda não gastou seria invisível — foi exatamente o que
+aconteceu com um anúncio real da conta Wesley.
 
-- **"Veiculando agora: N"** (selo do cabeçalho) vem do `effective_status` da edge
-  `/campaigns` — campanhas ligadas neste momento, inclusive as que ainda não
-  gastaram nada.
-- **Tabela de campanhas** lista quem teve entrega na janela, que é o que os
-  insights enxergam. Campanha pausada depois de rodar aparece aqui, marcada
-  com o selo *Pausada*.
+As métricas dos insights são penduradas nessa árvore. Quem não tem entrega
+aparece zerado, nunca com número inventado, e sem posicionamento chutado
+(`format: null`).
 
-Usar a contagem de linhas da tabela como "campanhas ativas" seria errado nos dois
-sentidos: conta pausadas e ignora ativas sem gasto.
+Entra na tela quem **está no ar agora** ou **gastou na janela**. Fica de fora só
+o que está pausado e sem entrega — campanha antiga que viraria ruído (a conta
+Gov360 tem 21 campanhas pausadas).
+
+O selo "Veiculando agora: N" conta `effective_status === 'ACTIVE'` em todas as
+campanhas da conta, e por isso pode divergir do número de linhas da tabela. São
+recortes diferentes de propósito. Conjuntos e anúncios pausados ficam marcados
+*· pausado* na árvore.
+
+### A chavinha do card não pausa nada
+
+No mobile ela mostra o estado real do anúncio e **não é clicável**. Um botão que
+parece pausar mas não pausa faria alguém achar que desligou um anúncio que
+continua gastando.
 
 ### Variável de ambiente
 

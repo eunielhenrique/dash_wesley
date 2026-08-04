@@ -39,6 +39,16 @@ check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta Go
 check('contas do menu = Gov360 e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Gov360/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
 check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Gov360', d.getElementById('acctName').textContent);
 check('nenhum "Elvis" sobrou', !/Elvis/.test(txt), 'achou Elvis');
+check('chavinha do card reflete estado real (2 pausados de 6)', d.querySelectorAll('.sw.off').length===2, d.querySelectorAll('.sw.off').length);
+check('chavinha não é mais clicável (não pausa de verdade)', !d.querySelector('[data-sw]'), 'ainda tem data-sw');
+// a árvore (conjuntos/anúncios) só existe com a campanha expandida
+{
+  const row = d.querySelector('.trow[data-c="2"]');   // camps[2] está pausada na fixture
+  row.dispatchEvent(new row.ownerDocument.defaultView.MouseEvent('click', { bubbles: true }));
+  const tree = d.getElementById('tbody').innerHTML;
+  check('expandir campanha revela conjuntos e anúncios', /Conjunto A2/.test(tree) && /Vídeo 15s/.test(tree), tree.slice(0, 80));
+  check('conjunto e anúncio pausados marcados na árvore', (tree.match(/· pausado/g) || []).length >= 2, (tree.match(/· pausado/g) || []).length);
+}
 check('nenhum NaN/Infinity/undefined na tela', !/NaN|Infinity|undefined/.test(txt), (txt.match(/NaN|Infinity|undefined/g)||[]).join(','));
 check('CPC/CPM do desktop calculado dos cliques reais', /8\.942 cliques/.test(txt), 'cliques');
 check('investimento somado das campanhas', /R\$ 16\.160,00/.test(txt) || /16\.160/.test(txt), (txt.match(/R\$ [\d.,]+/)||[])[0]);

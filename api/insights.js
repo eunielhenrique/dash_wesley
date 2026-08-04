@@ -41,7 +41,8 @@ const revenueOf = (row) =>
   num((row.action_values || []).find((a) => a.action_type === 'purchase')?.value);
 
 // platform_position tem dezenas de valores; a página só separa em três trilhos.
-function formatOf(position = '') {
+function formatOf(position) {
+  if (!position) return null;          // anúncio no ar sem entrega ainda não tem posicionamento
   const p = position.toLowerCase();
   if (p.includes('reel')) return 'REELS';
   if (p.includes('stor')) return 'STORIES';
@@ -101,18 +102,16 @@ export default async function handler(req, res) {
   const act = `/${actId}`;
 
   try {
-    const [adRows, adsetRows, campRows, dailyRows, placementRows, statusRows] = await Promise.all([
+    const [adRows, adsetRows, campRows, dailyRows, placementRows, campEnt, setEnt, adEnt] = await Promise.all([
       graph(`${act}/insights`, {
         ...base,
-        fields: 'ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,reach,clicks,inline_link_clicks,action_values',
+        fields: 'ad_id,spend,impressions,reach,clicks,inline_link_clicks,action_values',
       }, token),
       graph(`${act}/insights`, {
-        ...base, level: 'adset',
-        fields: 'adset_id,adset_name,campaign_id,spend,impressions,reach',
+        ...base, level: 'adset', fields: 'adset_id,spend,impressions,reach',
       }, token),
       graph(`${act}/insights`, {
-        ...base, level: 'campaign',
-        fields: 'campaign_id,campaign_name,objective,spend,impressions,reach',
+        ...base, level: 'campaign', fields: 'campaign_id,spend,impressions,reach',
       }, token),
       graph(`${act}/insights`, {
         ...base, level: 'account', time_increment: '1', fields: 'spend',
@@ -120,13 +119,17 @@ export default async function handler(req, res) {
       graph(`${act}/insights`, {
         ...base, breakdowns: 'publisher_platform,platform_position', fields: 'ad_id,impressions',
       }, token),
-      graph(`${act}/campaigns`, { fields: 'id,effective_status', limit: '500' }, token),
+      // A hierarquia vem das entidades, não dos insights: insights só enxergam quem
+      // teve entrega, então anúncio no ar que ainda não gastou sumiria da tela.
+      graph(`${act}/campaigns`, { fields: 'id,name,objective,effective_status', limit: '500' }, token),
+      graph(`${act}/adsets`, { fields: 'id,name,campaign_id,effective_status', limit: '500' }, token),
+      graph(`${act}/ads`, { fields: 'id,name,adset_id,campaign_id,effective_status', limit: '500' }, token),
     ]);
 
-    // "Veicular agora" e "ter tido entrega no período" são coisas diferentes: uma
-    // campanha pausada ontem aparece nos insights, e uma ativa sem gasto não aparece.
-    const statusById = {};
-    for (const c of statusRows) statusById[c.id] = c.effective_status;
+    const byId = (rows, key) => Object.fromEntries(rows.map((r) => [r[key], r]));
+    const adIns = byId(adRows, 'ad_id');
+    const setIns = byId(adsetRows, 'adset_id');
+    const campIns = byId(campRows, 'campaign_id');
 
     // Um anúncio roda em vários posicionamentos; o trilho usa o de maior volume.
     const bestPlacement = {};
@@ -136,61 +139,86 @@ export default async function handler(req, res) {
       if (!cur || imp > cur.imp) bestPlacement[row.ad_id] = { imp, position: row.platform_position };
     }
 
-    const ads = adRows
-      .map((r) => ({
-        id: r.ad_id,
-        name: r.ad_name,
-        campaign: r.campaign_name,
-        adset: r.adset_name,
-        format: formatOf(bestPlacement[r.ad_id]?.position),
-        spend: num(r.spend),
-        imp: num(r.impressions),
-        reach: num(r.reach),
-        clicks: num(r.clicks),
-        linkClicks: num(r.inline_link_clicks),
-        revenue: revenueOf(r),
-      }))
-      .sort((a, b) => b.spend - a.spend);
+    const isOn = (e) => e.effective_status === 'ACTIVE';
+    // Entra na tela quem está no ar agora OU gastou na janela. Fica de fora só o
+    // que está pausado e sem entrega — ruído de campanha antiga.
+    const relevant = (e, ins) => isOn(e) || !!ins[e.id];
+
+    const setById = byId(setEnt, 'id');
+    const campById = byId(campEnt, 'id');
+
+    const ads = adEnt
+      .filter((a) => relevant(a, adIns))
+      .map((a) => {
+        const m = adIns[a.id] || {};
+        return {
+          id: a.id,
+          name: a.name,
+          active: isOn(a),
+          campaign: campById[a.campaign_id]?.name || '—',
+          adset: setById[a.adset_id]?.name || '—',
+          format: formatOf(bestPlacement[a.id]?.position),
+          spend: num(m.spend),
+          imp: num(m.impressions),
+          reach: num(m.reach),
+          clicks: num(m.clicks),
+          linkClicks: num(m.inline_link_clicks),
+          revenue: revenueOf(m),
+        };
+      })
+      .sort((a, b) => b.spend - a.spend || Number(b.active) - Number(a.active));
 
     // Alcance não é somável (uma pessoa alcançada por dois anúncios conta uma vez),
     // por isso campanha e conjunto vêm dos seus próprios níveis, não de uma soma.
-    const adsByAdset = {};
-    for (const r of adRows) {
-      (adsByAdset[r.adset_id] ||= []).push({
-        name: r.ad_name,
-        imp: num(r.impressions),
-        cpc: num(r.clicks) ? num(r.spend) / num(r.clicks) : 0,
-      });
-    }
-    const adsetsByCampaign = {};
-    for (const r of adsetRows) {
-      (adsetsByCampaign[r.campaign_id] ||= []).push({
-        name: r.adset_name,
-        spend: num(r.spend),
-        imp: num(r.impressions),
-        reach: num(r.reach),
-        creatives: (adsByAdset[r.adset_id] || []).sort((a, b) => b.imp - a.imp),
-      });
-    }
-    const camps = campRows
-      .map((r) => ({
-        name: r.campaign_name,
-        status: statusById[r.campaign_id] || 'UNKNOWN',
-        active: statusById[r.campaign_id] === 'ACTIVE',
-        obj: OBJECTIVES[r.objective] || r.objective || '—',
-        spend: num(r.spend),
-        imp: num(r.impressions),
-        reach: num(r.reach),
-        adsets: (adsetsByCampaign[r.campaign_id] || []).sort((a, b) => b.spend - a.spend),
-      }))
-      .sort((a, b) => b.spend - a.spend);
+    const camps = campEnt
+      .filter((c) => relevant(c, campIns))
+      .map((c) => {
+        const m = campIns[c.id] || {};
+        return {
+          name: c.name,
+          status: c.effective_status,
+          active: isOn(c),
+          obj: OBJECTIVES[c.objective] || c.objective || '—',
+          spend: num(m.spend),
+          imp: num(m.impressions),
+          reach: num(m.reach),
+          adsets: setEnt
+            .filter((s) => s.campaign_id === c.id && relevant(s, setIns))
+            .map((s) => {
+              const sm = setIns[s.id] || {};
+              return {
+                name: s.name,
+                active: isOn(s),
+                spend: num(sm.spend),
+                imp: num(sm.impressions),
+                reach: num(sm.reach),
+                creatives: adEnt
+                  .filter((a) => a.adset_id === s.id && relevant(a, adIns))
+                  .map((a) => {
+                    const am = adIns[a.id] || {};
+                    return {
+                      name: a.name,
+                      active: isOn(a),
+                      imp: num(am.impressions),
+                      cpc: num(am.clicks) ? num(am.spend) / num(am.clicks) : 0,
+                    };
+                  })
+                  .sort((x, y) => y.imp - x.imp),
+              };
+            })
+            .sort((x, y) => y.spend - x.spend),
+        };
+      })
+      .sort((a, b) => b.spend - a.spend || Number(b.active) - Number(a.active));
 
     const daily = dailyRows
       .map((r) => ({ date: r.date_start, spend: num(r.spend) }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
     const clicks = ads.reduce((s, a) => s + a.clicks, 0);
-    const activeCount = Object.values(statusById).filter((v) => v === 'ACTIVE').length;
+    const activeCount = campEnt.filter(isOn).length;
+    const activeAdsets = setEnt.filter(isOn).length;
+    const activeAds = adEnt.filter(isOn).length;
 
     res.setHeader('Cache-Control', 'private, max-age=0, s-maxage=300, stale-while-revalidate=600');
     return res.status(200).json({
@@ -198,6 +226,8 @@ export default async function handler(req, res) {
       period: range,
       clicks,
       activeCount,
+      activeAdsets,
+      activeAds,
       ads,
       camps,
       daily,

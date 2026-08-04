@@ -135,7 +135,7 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
 </header>
 <div class="chips" id="chips"></div>
 <main>
-  <div class="mhead"><b>Anúncios patrocinados</b><small><span id="count"></span> ativos · deslize →</small></div>
+  <div class="mhead"><b>Anúncios patrocinados</b><small><span id="count"></span> anúncios · deslize →</small></div>
   <div class="rail" id="rail"></div>
   <div class="foot" id="mFoot"></div>
 </main>
@@ -186,7 +186,7 @@ const ACCOUNTS=['Gov360','Wesley'];
 const ACCOUNT_KEY={'Gov360':'gov360','Wesley':'wesley'};
 const stored=localStorage.getItem('ma-account');
 let filter='Todos',account=ACCOUNTS.includes(stored)?stored:'Gov360';
-const off={},open={};
+const open={};
 const imgs=JSON.parse(localStorage.getItem('ma-imgs')||'{}');
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 /* mobile */
@@ -212,7 +212,7 @@ function cards(){
     const img=imgs[a.id]?`<img src="${imgs[a.id]}" alt="">`:`<div class="ph">Arraste o criativo do v\u00eddeo aqui<br>ou clique para escolher</div>`;
     return `<article class="card"><div class="media" data-id="${a.id}">${img}
       <div class="rank">#${i+1}</div>
-      <div class="sw${off[a.id]?' off':''}" data-sw="${a.id}"><div class="kn"></div></div>
+      <div class="sw${a.active?'':' off'}" title="${a.active?'Veiculando':'Pausado'}"><div class="kn"></div></div>
       <div class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
     <div class="body">
       <div class="hero"><span>CPR</span><b>${brl(cpr)}</b></div>
@@ -261,7 +261,7 @@ function table(){
     if(open[i]){
       h+=`<div class="sub2">`+c.adsets.map(a=>`<div style="margin-top:12px">
         <div class="arow"><div></div><div class="an">\u25b8 ${a.name}</div><div class="num">${brl(a.spend)}</div><div class="num">${int(a.imp)}</div><div class="num">${int(a.reach)}</div><div class="num">${brl(a.spend/(a.imp*.021))}</div><div class="num">${brl(a.spend/a.imp*1000)}</div></div>
-        <div class="creatives">${a.creatives.map(cr=>`<div class="cr"><div class="thumb">criativo</div><div><div class="cn">${cr.name}</div><div class="cs">${int(cr.imp)} impress\u00f5es \u00b7 CPC ${brl(cr.cpc)}</div></div></div>`).join('')}</div>
+        <div class="creatives">${a.creatives.map(cr=>`<div class="cr"><div class="thumb">criativo</div><div><div class="cn">${cr.name}${cr.active===false?' <span style="font-weight:400;color:#a8acb3">· pausado</span>':''}</div><div class="cs">${int(cr.imp)} impress\u00f5es \u00b7 CPC ${brl(cr.cpc)}</div></div></div>`).join('')}</div>
       </div>`).join('')+`</div>`;
     }
     return h;
@@ -296,8 +296,6 @@ async function load(){
 document.addEventListener('click',e=>{
   const chip=e.target.closest('.chip');
   if(chip){filter=chip.dataset.f;chips();cards();return}
-  const sw=e.target.closest('[data-sw]');
-  if(sw){const id=sw.dataset.sw;off[id]=!off[id];sw.classList.toggle('off',!!off[id]);return}
   if(e.target.closest('#acctBtn')){document.getElementById('menu').classList.toggle('open');return}
   const mi=e.target.closest('.mi');
   if(mi){account=mi.dataset.acc;localStorage.setItem('ma-account',account);document.getElementById('menu').classList.remove('open');load();return}

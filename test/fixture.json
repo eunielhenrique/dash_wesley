@@ -17,7 +17,8 @@
    "reach": 410000,
    "clicks": 900,
    "linkClicks": 600,
-   "revenue": 0
+   "revenue": 0,
+   "active": true
   },
   {
    "id": "ad1",
@@ -30,7 +31,8 @@
    "reach": 360000,
    "clicks": 810,
    "linkClicks": 520,
-   "revenue": 3900
+   "revenue": 3900,
+   "active": true
   },
   {
    "id": "ad2",
@@ -43,7 +45,8 @@
    "reach": 310000,
    "clicks": 720,
    "linkClicks": 440,
-   "revenue": 0
+   "revenue": 0,
+   "active": true
   },
   {
    "id": "ad3",
@@ -56,7 +59,8 @@
    "reach": 260000,
    "clicks": 630,
    "linkClicks": 360,
-   "revenue": 3300
+   "revenue": 3300,
+   "active": true
   },
   {
    "id": "ad4",
@@ -69,7 +73,8 @@
    "reach": 210000,
    "clicks": 540,
    "linkClicks": 280,
-   "revenue": 0
+   "revenue": 0,
+   "active": false
   },
   {
    "id": "ad5",
@@ -82,7 +87,8 @@
    "reach": 160000,
    "clicks": 450,
    "linkClicks": 200,
-   "revenue": 2700
+   "revenue": 2700,
+   "active": false
   }
  ],
  "camps": [
@@ -102,14 +108,17 @@
       {
        "name": "Vídeo 15s",
        "imp": 141200,
-       "cpc": 1.42
+       "cpc": 1.42,
+       "active": true
       },
       {
        "name": "Carrossel",
        "imp": 87200,
-       "cpc": 1.68
+       "cpc": 1.68,
+       "active": true
       }
-     ]
+     ],
+     "active": true
     }
    ],
    "status": "ACTIVE",
@@ -131,14 +140,17 @@
       {
        "name": "Vídeo 15s",
        "imp": 121200,
-       "cpc": 1.52
+       "cpc": 1.52,
+       "active": true
       },
       {
        "name": "Carrossel",
        "imp": 77200,
-       "cpc": 1.78
+       "cpc": 1.78,
+       "active": true
       }
-     ]
+     ],
+     "active": true
     }
    ],
    "status": "ACTIVE",
@@ -160,14 +172,17 @@
       {
        "name": "Vídeo 15s",
        "imp": 101200,
-       "cpc": 1.6199999999999999
+       "cpc": 1.6199999999999999,
+       "active": false
       },
       {
        "name": "Carrossel",
        "imp": 67200,
-       "cpc": 1.88
+       "cpc": 1.88,
+       "active": false
       }
-     ]
+     ],
+     "active": false
     }
    ],
    "status": "PAUSED",
@@ -189,14 +204,17 @@
       {
        "name": "Vídeo 15s",
        "imp": 81200,
-       "cpc": 1.72
+       "cpc": 1.72,
+       "active": false
       },
       {
        "name": "Carrossel",
        "imp": 57200,
-       "cpc": 1.98
+       "cpc": 1.98,
+       "active": false
       }
-     ]
+     ],
+     "active": false
     }
    ],
    "status": "PAUSED",
@@ -325,5 +343,7 @@
    "spend": 336.27
   }
  ],
- "activeCount": 2
+ "activeCount": 2,
+ "activeAdsets": 3,
+ "activeAds": 4
 }
