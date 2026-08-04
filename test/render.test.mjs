@@ -29,7 +29,7 @@ check('KPIs do desktop renderizados', d.querySelectorAll('.dkpi').length===4, d.
 check('cards do mobile renderizados', d.querySelectorAll('.card').length===6, d.querySelectorAll('.card').length);
 check('linhas de campanha', d.querySelectorAll('.trow:not(.hd)').length===4, d.querySelectorAll('.trow:not(.hd)').length);
 check('barras do gráfico = dias da série', d.querySelectorAll('#chart rect').length===stub.daily.length, d.querySelectorAll('#chart rect').length);
-check('período real no cabeçalho mobile', d.getElementById('mPeriod').textContent==='06/07 – 04/08', d.getElementById('mPeriod').textContent);
+check('cabeçalho mobile não tem mais pílula de data', !d.getElementById('mPeriod'), 'ainda existe');
 check('período real no cabeçalho desktop', /06\/07 – 04\/08 de 2026/.test(d.getElementById('dPeriod').textContent), d.getElementById('dPeriod').textContent);
 check('selo mostra veiculando agora, vindo do activeCount', d.getElementById('dActive').textContent==='Veiculando agora: 2', d.getElementById('dActive').textContent);
 check('selo não repete a contagem de linhas da tabela', d.getElementById('dActive').textContent!=='Veiculando agora: 4', d.getElementById('dActive').textContent);
@@ -45,8 +45,10 @@ check('sem MP4 mas com thumb, cai na imagem real', d.querySelectorAll('.media im
 check('sem criativo nenhum, mantém o placeholder de arrastar', d.querySelectorAll('.media .ph').length===1, d.querySelectorAll('.media .ph').length);
 check('card com vídeo não abre seletor de arquivo ao clicar', d.querySelectorAll('.media[data-video][data-pick]').length===0, 'ainda abre');
 check('overlay de play some onde há vídeo de verdade', d.querySelectorAll('.play').length===2, d.querySelectorAll('.play').length);
-check('chavinha do card reflete estado real (2 pausados de 6)', d.querySelectorAll('.sw.off').length===2, d.querySelectorAll('.sw.off').length);
-check('chavinha não é mais clicável (não pausa de verdade)', !d.querySelector('[data-sw]'), 'ainda tem data-sw');
+check('card não tem mais chavinha', d.querySelectorAll('.sw').length===0, d.querySelectorAll('.sw').length);
+check('card não tem mais bloco de CPR', d.querySelectorAll('.hero').length===0, d.querySelectorAll('.hero').length);
+check('card mostra só o nome do criativo, sem a nomenclatura', d.querySelector('.names .n').textContent==='Anúncio 1 — criativo de vídeo', d.querySelector('.names .n').textContent);
+check('card não repete campanha e conjunto', d.querySelectorAll('.names .c').length===0, d.querySelectorAll('.names .c').length);
 // a árvore (conjuntos/anúncios) só existe com a campanha expandida
 {
   const row = d.querySelector('.trow[data-c="2"]');   // camps[2] está pausada na fixture
@@ -64,7 +66,7 @@ d = await boot({ apiOk:false });
 check('não mostra card nenhum', d.querySelectorAll('.card').length===0, d.querySelectorAll('.card').length);
 check('rodapé explica a falha', /Não foi possível carregar: META_ACCESS_TOKEN/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('trilho mostra estado honesto', /Não foi possível carregar/.test(d.getElementById('rail').textContent), d.getElementById('rail').textContent.slice(0,60));
-check('período vira travessão, não data falsa', d.getElementById('mPeriod').textContent==='—', d.getElementById('mPeriod').textContent);
+check('cabeçalho desktop mantém o período honesto', d.getElementById('dPeriod').textContent==='—', d.getElementById('dPeriod').textContent);
 check('sem número inventado na tela', !/R\$ [1-9]/.test(d.body.textContent), (d.body.textContent.match(/R\$ [^\s]+/g)||[]).slice(0,3).join(','));
 
 console.log(fail?`\n${fail} FALHA(S)`:'\nTODOS OS TESTES DE RENDER PASSARAM');

@@ -129,7 +129,6 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
         </div>
       </div>
     </div>
-    <div class="period" id="mPeriod">—</div>
   </div>
   <div class="menu" id="menu"></div>
   <div class="kpis" id="kpis"></div>
@@ -190,6 +189,8 @@ let filter='Todos',account=ACCOUNTS.includes(stored)?stored:'Elvis';
 const open={};
 const imgs=JSON.parse(localStorage.getItem('ma-imgs')||'{}');
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+// nome do criativo sem a nomenclatura: tira os blocos [TAG] e o código do post no fim
+function criativo(s){const t=String(s||'').replace(/\[[^\]]*\]/g,'').replace(/\s*\([^()]*\)\s*$/,'').replace(/\s+/g,' ').trim();return t||String(s||'')}
 /* mobile */
 function kpis(){
   const ts=ads.reduce((s,a)=>s+a.spend,0),ti=ads.reduce((s,a)=>s+a.imp,0),tr=ads.reduce((s,a)=>s+a.reach,0);
@@ -217,11 +218,9 @@ function cards(){
       :`<div class="ph">Arraste o criativo do v\u00eddeo aqui<br>ou clique para escolher</div>`;
     return `<article class="card"><div class="media" data-id="${a.id}"${real?'':' data-pick="1"'}${a.video?' data-video="1"':''}>${img}
       <div class="rank">#${i+1}</div>
-      <div class="sw${a.active?'':' off'}" title="${a.active?'Veiculando':'Pausado'}"><div class="kn"></div></div>
       ${a.video?'':'<div class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>'}</div>
     <div class="body">
-      <div class="hero"><span>CPR</span><b>${brl(cpr)}</b></div>
-      <div class="names"><div class="n">${esc(a.name)}</div><div class="c">${esc(a.campaign)}</div><div class="c">${esc(a.adset)}</div></div>
+      <div class="names"><div class="n">${esc(criativo(a.name))}</div></div>
       <div class="mx">${m.map(x=>`<div><div class="l">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('')}</div>
     </div></article>`;
   }).join('');
@@ -275,7 +274,6 @@ function table(){
 function fmtRange(r){if(!r)return '—';const d=v=>{const t=v.split('-');return t[2]+'/'+t[1]};return d(r.since)+' – '+d(r.until)}
 function chrome(){
   const range=loading?'…':loadError?'—':fmtRange(period);
-  document.getElementById('mPeriod').textContent=range;
   document.getElementById('dPeriod').textContent=loading?'carregando…':loadError?'—':fmtRange(period)+' de '+(period?period.since.split('-')[0]:'');
   document.getElementById('dActive').textContent=loading?'…':loadError?'—':'Veiculando agora: '+activeCount;
   const note=loading?'Carregando dados da conta '+account+'…'
