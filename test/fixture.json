@@ -18,7 +18,9 @@
    "clicks": 900,
    "linkClicks": 600,
    "revenue": 0,
-   "active": true
+   "active": true,
+   "video": "https://cdn.example/v0.mp4",
+   "thumb": "https://cdn.example/t0.jpg"
   },
   {
    "id": "ad1",
@@ -32,7 +34,9 @@
    "clicks": 810,
    "linkClicks": 520,
    "revenue": 3900,
-   "active": true
+   "active": true,
+   "video": "https://cdn.example/v1.mp4",
+   "thumb": "https://cdn.example/t1.jpg"
   },
   {
    "id": "ad2",
@@ -46,7 +50,9 @@
    "clicks": 720,
    "linkClicks": 440,
    "revenue": 0,
-   "active": true
+   "active": true,
+   "video": "https://cdn.example/v2.mp4",
+   "thumb": "https://cdn.example/t2.jpg"
   },
   {
    "id": "ad3",
@@ -60,7 +66,9 @@
    "clicks": 630,
    "linkClicks": 360,
    "revenue": 3300,
-   "active": true
+   "active": true,
+   "video": "https://cdn.example/v3.mp4",
+   "thumb": "https://cdn.example/t3.jpg"
   },
   {
    "id": "ad4",
@@ -74,7 +82,9 @@
    "clicks": 540,
    "linkClicks": 280,
    "revenue": 0,
-   "active": false
+   "active": false,
+   "video": null,
+   "thumb": "https://cdn.example/t4.jpg"
   },
   {
    "id": "ad5",
@@ -88,7 +98,9 @@
    "clicks": 450,
    "linkClicks": 200,
    "revenue": 2700,
-   "active": false
+   "active": false,
+   "video": null,
+   "thumb": null
   }
  ],
  "camps": [

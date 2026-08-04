@@ -85,6 +85,65 @@ async function graph(path, params, token) {
   return rows;
 }
 
+// O criativo real: thumbnail vem no próprio anúncio, mas o MP4 (campo `source`)
+// só é liberado com o token da PÁGINA dona do vídeo — nem o token de sistema com
+// ads_management enxerga. Por isso: pega os tokens de página, agrupa os vídeos por
+// página e faz uma leitura em lote por token.
+async function creativeMedia(actId, token) {
+  const media = {};
+  let rows;
+  try {
+    rows = await graph(`/${actId}/ads`, {
+      fields: 'id,creative{thumbnail_url,image_url,video_id,effective_object_story_id}',
+      limit: '500',
+    }, token);
+  } catch {
+    return media;                     // sem criativo a tela cai no placeholder
+  }
+
+  const videos = [];
+  for (const r of rows) {
+    const c = r.creative || {};
+    media[r.id] = { thumb: c.thumbnail_url || c.image_url || null, video: null };
+    if (c.video_id) {
+      videos.push({ adId: r.id, videoId: c.video_id, pageId: String(c.effective_object_story_id || '').split('_')[0] });
+    }
+  }
+  if (!videos.length) return media;
+
+  let pages;
+  try {
+    pages = await graph('/me/accounts', { fields: 'id,access_token', limit: '200' }, token);
+  } catch {
+    return media;
+  }
+  const pageToken = Object.fromEntries(pages.map((p) => [p.id, p.access_token]));
+
+  const byPage = {};
+  for (const v of videos) {
+    if (pageToken[v.pageId]) (byPage[v.pageId] ||= []).push(v);
+  }
+
+  await Promise.all(Object.entries(byPage).map(async ([pageId, list]) => {
+    try {
+      const url = new URL(`${API}/`);
+      url.searchParams.set('ids', list.map((v) => v.videoId).join(','));
+      url.searchParams.set('fields', 'source,picture');
+      url.searchParams.set('access_token', pageToken[pageId]);
+      const body = await (await fetch(url)).json();
+      if (body.error) return;
+      for (const v of list) {
+        const found = body[v.videoId];
+        if (!found) continue;
+        if (found.source) media[v.adId].video = found.source;
+        if (found.picture && !media[v.adId].thumb) media[v.adId].thumb = found.picture;
+      }
+    } catch { /* um vídeo sem MP4 não pode derrubar a tela toda */ }
+  }));
+
+  return media;
+}
+
 export default async function handler(req, res) {
   const token = process.env.META_ACCESS_TOKEN || FALLBACK_TOKEN;
   const key = String(req.query.account || 'gov360').toLowerCase();
@@ -107,7 +166,7 @@ export default async function handler(req, res) {
   const act = `/${actId}`;
 
   try {
-    const [adRows, adsetRows, campRows, dailyRows, placementRows, campEnt, setEnt, adEnt] = await Promise.all([
+    const [adRows, adsetRows, campRows, dailyRows, placementRows, campEnt, setEnt, adEnt, media] = await Promise.all([
       graph(`${act}/insights`, {
         ...base,
         fields: 'ad_id,spend,impressions,reach,clicks,inline_link_clicks,action_values',
@@ -129,6 +188,7 @@ export default async function handler(req, res) {
       graph(`${act}/campaigns`, { fields: 'id,name,objective,effective_status', limit: '500' }, token),
       graph(`${act}/adsets`, { fields: 'id,name,campaign_id,effective_status', limit: '500' }, token),
       graph(`${act}/ads`, { fields: 'id,name,adset_id,campaign_id,effective_status', limit: '500' }, token),
+      creativeMedia(actId, token),
     ]);
 
     const byId = (rows, key) => Object.fromEntries(rows.map((r) => [r[key], r]));
@@ -163,6 +223,8 @@ export default async function handler(req, res) {
           campaign: campById[a.campaign_id]?.name || '—',
           adset: setById[a.adset_id]?.name || '—',
           format: formatOf(bestPlacement[a.id]?.position),
+          video: media[a.id]?.video || null,
+          thumb: media[a.id]?.thumb || null,
           spend: num(m.spend),
           imp: num(m.impressions),
           reach: num(m.reach),

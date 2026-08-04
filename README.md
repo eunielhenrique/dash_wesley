@@ -50,6 +50,22 @@ campanhas da conta, e por isso pode divergir do número de linhas da tabela. Sã
 recortes diferentes de propósito. Conjuntos e anúncios pausados ficam marcados
 *· pausado* na árvore.
 
+### Criativo real no card
+
+O card do mobile mostra o **vídeo do anúncio**, não um placeholder. A thumbnail
+vem junto do anúncio (`creative{thumbnail_url}`), mas o MP4 (`source` do vídeo)
+só é liberado com o **token da Página dona do vídeo** — nem token de sistema com
+`ads_management` enxerga. Por isso `creativeMedia()` busca os tokens de página
+em `/me/accounts`, agrupa os vídeos por página e lê em lote, um request por
+página.
+
+A ordem de exibição é: imagem que o usuário soltou no card > vídeo real >
+thumbnail real > placeholder de arrastar. Onde há vídeo, clicar toca em vez de
+abrir o seletor de arquivo.
+
+Se o token perder acesso às páginas, o MP4 some e o card cai na thumbnail; nada
+quebra.
+
 ### A chavinha do card não pausa nada
 
 No mobile ela mostra o estado real do anúncio e **não é clicável**. Um botão que
@@ -92,6 +108,22 @@ O selo "Veiculando agora: N" conta `effective_status === 'ACTIVE'` em todas as
 campanhas da conta, e por isso pode divergir do número de linhas da tabela. São
 recortes diferentes de propósito. Conjuntos e anúncios pausados ficam marcados
 *· pausado* na árvore.
+
+### Criativo real no card
+
+O card do mobile mostra o **vídeo do anúncio**, não um placeholder. A thumbnail
+vem junto do anúncio (`creative{thumbnail_url}`), mas o MP4 (`source` do vídeo)
+só é liberado com o **token da Página dona do vídeo** — nem token de sistema com
+`ads_management` enxerga. Por isso `creativeMedia()` busca os tokens de página
+em `/me/accounts`, agrupa os vídeos por página e lê em lote, um request por
+página.
+
+A ordem de exibição é: imagem que o usuário soltou no card > vídeo real >
+thumbnail real > placeholder de arrastar. Onde há vídeo, clicar toca em vez de
+abrir o seletor de arquivo.
+
+Se o token perder acesso às páginas, o MP4 some e o card cai na thumbnail; nada
+quebra.
 
 ### A chavinha do card não pausa nada
 

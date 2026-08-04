@@ -39,6 +39,12 @@ check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta El
 check('contas do menu = Elvis e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Elvis/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
 check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Elvis', d.getElementById('acctName').textContent);
 check('rodapé nomeia a conta certa', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
+check('vídeo real renderizado nos cards que têm MP4', d.querySelectorAll('.media video.vid').length===4, d.querySelectorAll('.media video.vid').length);
+check('vídeo usa a thumbnail real como poster', d.querySelector('.media video.vid')?.getAttribute('poster')==='https://cdn.example/t0.jpg', d.querySelector('.media video.vid')?.getAttribute('poster'));
+check('sem MP4 mas com thumb, cai na imagem real', d.querySelectorAll('.media img').length===1, d.querySelectorAll('.media img').length);
+check('sem criativo nenhum, mantém o placeholder de arrastar', d.querySelectorAll('.media .ph').length===1, d.querySelectorAll('.media .ph').length);
+check('card com vídeo não abre seletor de arquivo ao clicar', d.querySelectorAll('.media[data-video][data-pick]').length===0, 'ainda abre');
+check('overlay de play some onde há vídeo de verdade', d.querySelectorAll('.play').length===2, d.querySelectorAll('.play').length);
 check('chavinha do card reflete estado real (2 pausados de 6)', d.querySelectorAll('.sw.off').length===2, d.querySelectorAll('.sw.off').length);
 check('chavinha não é mais clicável (não pausa de verdade)', !d.querySelector('[data-sw]'), 'ainda tem data-sw');
 // a árvore (conjuntos/anúncios) só existe com a campanha expandida

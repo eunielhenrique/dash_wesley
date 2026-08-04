@@ -43,7 +43,8 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
 .rail{display:flex;gap:14px;overflow-x:auto;padding:0 20px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .card{background:#fff;border:1px solid #dee1e6;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;flex:0 0 330px;scroll-snap-align:start}
 .media{position:relative;width:100%;aspect-ratio:9/10;background:#eef0f3;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
-.media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.media img,.media .vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.media .vid{background:#000}
 .media .ph{color:#7c828a;font-size:13px;text-align:center;padding:0 30px}
 .media.over{outline:2px solid #0052ff;outline-offset:-2px}
 .rank{position:absolute;top:14px;left:14px;background:#0a0b0d;color:#fff;font-weight:700;font-size:14px;border-radius:100px;padding:6px 14px}
@@ -209,11 +210,15 @@ function cards(){
   document.getElementById('rail').innerHTML=shown.map((a,i)=>{
     const cpr=a.linkClicks>0?a.spend/a.linkClicks:0;
     const m=[['Gasto',brl(a.spend)],['Impress\u00f5es',int(a.imp)],['Alcance',int(a.reach)],['Frequ\u00eancia',dec(a.imp/a.reach)],['Cliques',int(a.clicks)],['Cliques no Link',int(a.linkClicks)],['CPM',brl(a.spend/a.imp*1000)],['CPC',a.clicks?brl(a.spend/a.clicks):brl(0)],['CPC Link',a.linkClicks?brl(a.spend/a.linkClicks):brl(0)],['CTR',pct(a.clicks/a.imp*100)],['CTR Link',pct(a.linkClicks/a.imp*100)],['CPR',brl(cpr)],['Receita',brl(a.revenue)],['ROAS',dec(a.spend?a.revenue/a.spend:0)+'x']];
-    const img=imgs[a.id]?`<img src="${imgs[a.id]}" alt="">`:`<div class="ph">Arraste o criativo do v\u00eddeo aqui<br>ou clique para escolher</div>`;
-    return `<article class="card"><div class="media" data-id="${a.id}">${img}
+    const real=a.video||a.thumb;
+    const img=imgs[a.id]?`<img src="${imgs[a.id]}" alt="">`
+      :a.video?`<video class="vid" src="${a.video}"${a.thumb?` poster="${a.thumb}"`:''} controls playsinline preload="metadata"></video>`
+      :a.thumb?`<img src="${a.thumb}" alt="">`
+      :`<div class="ph">Arraste o criativo do v\u00eddeo aqui<br>ou clique para escolher</div>`;
+    return `<article class="card"><div class="media" data-id="${a.id}"${real?'':' data-pick="1"'}${a.video?' data-video="1"':''}>${img}
       <div class="rank">#${i+1}</div>
       <div class="sw${a.active?'':' off'}" title="${a.active?'Veiculando':'Pausado'}"><div class="kn"></div></div>
-      <div class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+      ${a.video?'':'<div class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>'}</div>
     <div class="body">
       <div class="hero"><span>CPR</span><b>${brl(cpr)}</b></div>
       <div class="names"><div class="n">${esc(a.name)}</div><div class="c">${esc(a.campaign)}</div><div class="c">${esc(a.adset)}</div></div>
@@ -302,7 +307,7 @@ document.addEventListener('click',e=>{
   if(!e.target.closest('#menu'))document.getElementById('menu').classList.remove('open');
   const tr=e.target.closest('.trow:not(.hd)');
   if(tr){const i=tr.dataset.c;open[i]=!open[i];table();return}
-  const media=e.target.closest('.media');
+  const media=e.target.closest('.media[data-pick]');
   if(media){
     const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
     inp.onchange=()=>{if(inp.files[0])ingest(inp.files[0],media.dataset.id)};inp.click();
