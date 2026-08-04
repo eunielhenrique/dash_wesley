@@ -64,6 +64,28 @@ check('nenhum NaN/Infinity/undefined na tela', !/NaN|Infinity|undefined/.test(tx
 check('CPC/CPM do desktop calculado dos cliques reais', /8\.942 cliques/.test(txt), 'cliques');
 check('investimento somado das campanhas', /R\$ 16\.160,00/.test(txt) || /16\.160/.test(txt), (txt.match(/R\$ [\d.,]+/)||[])[0]);
 
+console.log('\n[A2] atualização automática');
+{
+  const w = d.defaultView;
+  let calls = 0;
+  const realFetch = w.fetch;
+  w.fetch = (...a) => { calls++; return realFetch(...a); };
+
+  w.document.dispatchEvent(new w.Event('visibilitychange'));
+  await new Promise(r => setTimeout(r, 120));
+  check('voltar para a aba refaz a busca', calls === 1, calls);
+
+  // com vídeo tocando, a atualização não pode cortar o play
+  const vid = d.querySelector('video.vid');
+  Object.defineProperty(vid, 'paused', { value: false, configurable: true });
+  Object.defineProperty(vid, 'ended', { value: false, configurable: true });
+  const antes = calls;
+  w.document.dispatchEvent(new w.Event('visibilitychange'));
+  await new Promise(r => setTimeout(r, 120));
+  check('não recarrega com vídeo em reprodução', calls === antes, `${calls} vs ${antes}`);
+  w.fetch = realFetch;
+}
+
 console.log('\n[B] API indisponível (sem token)');
 d = await boot({ apiOk:false });
 check('não mostra card nenhum', d.querySelectorAll('.card').length===0, d.querySelectorAll('.card').length);

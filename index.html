@@ -283,8 +283,10 @@ function chrome(){
   document.getElementById('dStamp').textContent=loading||loadError?'':'Atualizado em '+new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
 }
 function render(){kpis();chips();cards();menu();dkpis();chart();shares();table();chrome()}
+let buscando=false;                       // requisição em voo (loading já nasce true p/ a tela)
 async function load(){
-  loading=true;loadError=null;ads=[];camps=[];daily=[];totalClicks=0;activeCount=0;period=null;
+  if(buscando)return;                     // não empilha buscas
+  buscando=true;loading=true;loadError=null;ads=[];camps=[];daily=[];totalClicks=0;activeCount=0;period=null;
   render();
   try{
     const r=await fetch('/api/insights?account='+ACCOUNT_KEY[account]);
@@ -292,7 +294,7 @@ async function load(){
     if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
     ads=j.ads||[];camps=j.camps||[];daily=j.daily||[];totalClicks=j.clicks||0;activeCount=j.activeCount||0;period=j.period||null;
   }catch(e){loadError=e.message||'falha de rede'}
-  loading=false;render();
+  loading=false;buscando=false;render();
 }
 /* events */
 document.addEventListener('click',e=>{
@@ -319,6 +321,12 @@ document.addEventListener('dragover',e=>{const m=e.target.closest&&e.target.clos
 document.addEventListener('dragleave',e=>{const m=e.target.closest&&e.target.closest('.media');if(m)m.classList.remove('over')});
 document.addEventListener('drop',e=>{const m=e.target.closest&&e.target.closest('.media');if(m){e.preventDefault();m.classList.remove('over');const f=e.dataTransfer.files[0];if(f)ingest(f,m.dataset.id)}});
 load();
+// A dash se atualiza sozinha: a cada 60s e ao voltar para a aba. Nunca durante
+// um vídeo em reprodução — recarregar troca o elemento e cortaria o play.
+const tocando=()=>[...document.querySelectorAll('video.vid')].some(v=>!v.paused&&!v.ended);
+const auto=()=>{if(!document.hidden&&!tocando())load()};
+setInterval(auto,60000);
+document.addEventListener('visibilitychange',auto);
 </script>
 </body>
 </html>

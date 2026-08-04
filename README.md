@@ -30,6 +30,19 @@ enxerga os números agregados.
 Contas disponíveis no seletor: **Elvis** e **Wesley**. Trocar de conta refaz a
 chamada. A janela padrão é de 30 dias (`/api/insights?account=elvis&days=30`).
 
+### Atualização
+
+Cada busca vai à Graph API na hora — não há cache de CDN (o `private` do
+`Cache-Control` já impedia qualquer `s-maxage`).
+
+A tela se atualiza sozinha a cada 60 segundos e ao voltar para a aba, **exceto
+com um vídeo em reprodução**: recarregar troca o elemento `<video>` e cortaria o
+play. Uma busca nunca empilha sobre outra em voo.
+
+Mudança de status (ativar/pausar) aparece na atualização seguinte. Números de
+entrega dependem do relatório da própria Meta, que tem latência de alguns
+minutos — a dash mostra o que a API responde, sem inventar o intervalo.
+
 ### De onde vem a hierarquia
 
 Campanha → conjunto → anúncio vem das **entidades** (`/campaigns`, `/adsets`,
@@ -95,6 +108,19 @@ variável de ambiente não vai para o Git.
 | **Wesley** | `act_902191367681121` (WESLEY CEZAR) |
 
 O valor `gov360` segue aceito como alias de `elvis` na querystring.
+
+### Atualização
+
+Cada busca vai à Graph API na hora — não há cache de CDN (o `private` do
+`Cache-Control` já impedia qualquer `s-maxage`).
+
+A tela se atualiza sozinha a cada 60 segundos e ao voltar para a aba, **exceto
+com um vídeo em reprodução**: recarregar troca o elemento `<video>` e cortaria o
+play. Uma busca nunca empilha sobre outra em voo.
+
+Mudança de status (ativar/pausar) aparece na atualização seguinte. Números de
+entrega dependem do relatório da própria Meta, que tem latência de alguns
+minutos — a dash mostra o que a API responde, sem inventar o intervalo.
 
 ### De onde vem a hierarquia
 
