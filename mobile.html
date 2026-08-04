@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  html,body{margin:0;padding:0;background:#f7f7f7;}
+  a{color:#0052ff;text-decoration:none;}
+  a:hover{color:#003ecc;}
+  ::-webkit-scrollbar{display:none;}
+</style>
+</helmet>
+<div style="width:100%;min-height:100vh;background:#f7f7f7;display:flex;justify-content:center;font-family:Inter,-apple-system,system-ui,sans-serif">
+<div style="width:100%;max-width:430px;min-height:100vh;background:#ffffff;color:#0a0b0d;display:flex;flex-direction:column">
+
+  <header style="padding:18px 20px 14px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;background:#ffffffe6;backdrop-filter:blur(12px);z-index:5;border-bottom:1px solid #dee1e6">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="position:relative">
+        <div onClick="{{ toggleAccountMenu }}" style="display:flex;align-items:center;gap:11px;cursor:pointer">
+          <div style="width:32px;height:32px;border-radius:9999px;background:#0052ff;display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:700;font-size:14px">{{ accountInitial }}</div>
+          <div>
+            <div style="font-weight:600;font-size:15px;letter-spacing:-0.2px">Meta Ads</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5b616e">{{ account }}
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ accountMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:44px;left:0;background:#ffffff;border:1px solid #dee1e6;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.08);padding:6px;min-width:180px;z-index:20;display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ accounts }}" as="acc" hint-placeholder-count="2">
+              <div onClick="{{ acc.select }}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;background:{{ acc.bg }}" style-hover="background:#eef0f3">
+                <div style="width:28px;height:28px;border-radius:9999px;background:{{ acc.avatarBg }};color:{{ acc.avatarColor }};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">{{ acc.initial }}</div>
+                <span style="font-size:14px;font-weight:{{ acc.weight }};color:#0a0b0d">{{ acc.name }}</span>
+                <sc-if value="{{ acc.selected }}" hint-placeholder-val="{{ false }}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M20 6 9 17l-5-5"></path></svg>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:#0a0b0d;background:#eef0f3;border-radius:100px;padding:6px 12px">1–31 jul 2026</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+        <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:16px;padding:10px 10px 9px;display:flex;flex-direction:column;gap:2px">
+          <div style="font-size:10px;color:#7c828a;font-weight:600;text-transform:uppercase;letter-spacing:0.04em">{{ k.label }}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:13px;letter-spacing:-0.02em;white-space:nowrap">{{ k.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </header>
+
+  <div style="display:flex;gap:8px;padding:14px 20px 4px;overflow-x:auto">
+    <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+      <button onClick="{{ f.select }}" style="border:none;background:{{ f.bg }};color:{{ f.color }};border-radius:100px;padding:9px 16px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap;cursor:pointer">{{ f.label }}</button>
+    </sc-for>
+  </div>
+
+  <main style="flex:1;padding:14px 0 32px;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 20px">
+      <div style="font-weight:600;font-size:18px;letter-spacing:-0.2px">Anúncios patrocinados</div>
+      <div style="font-size:12.5px;color:#5b616e">{{ adCount }} ativos · deslize →</div>
+    </div>
+
+    <div style="display:flex;gap:14px;overflow-x:auto;padding:0 20px 8px;scroll-snap-type:x mandatory;scrollbar-width:none">
+    <sc-for list="{{ ads }}" as="ad" hint-placeholder-count="3">
+      <article style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;flex:0 0 330px;scroll-snap-align:start">
+        <div style="position:relative;width:100%;aspect-ratio:9/10;background:#eef0f3">
+          <image-slot id="{{ ad.slotId }}" shape="rect" placeholder="Arraste o criativo do vídeo aqui"></image-slot>
+          <div style="position:absolute;top:14px;left:14px;pointer-events:none;background:#0a0b0d;color:#ffffff;font-weight:700;font-size:14px;border-radius:100px;padding:6px 14px">{{ ad.rank }}</div>
+          <div onClick="{{ ad.toggle }}" style="position:absolute;top:14px;right:14px;width:58px;height:32px;border-radius:100px;background:{{ ad.toggleBg }};cursor:pointer;transition:background 0.2s">
+            <div style="position:absolute;top:3px;left:{{ ad.knobLeft }};width:26px;height:26px;border-radius:9999px;background:#fff;transition:left 0.2s;box-shadow:0 1px 4px #0003"></div>
+          </div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;width:64px;height:64px;border-radius:9999px;background:#0a0b0dcc;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"></path></svg>
+          </div>
+        </div>
+        <div style="padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#eef0f3;border-radius:16px;padding:12px 16px">
+            <span style="font-size:14px;color:#5b616e;font-weight:500">{{ ad.heroLabel }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px;color:#0052ff">{{ ad.heroValue }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-weight:600;font-size:16px;line-height:1.35;letter-spacing:-0.1px">{{ ad.name }}</div>
+            <div style="font-size:13px;color:#7c828a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ad.campaign }}</div>
+            <div style="font-size:13px;color:#7c828a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ad.adset }}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;border-top:1px solid #eef0f3;padding-top:14px">
+            <sc-for list="{{ ad.metrics }}" as="m" hint-placeholder-count="8">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:13px;color:#5b616e">{{ m.label }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:15px;color:#0a0b0d">{{ m.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </article>
+    </sc-for>
+    </div>
+
+    <div style="text-align:center;font-size:12px;color:#7c828a;padding:6px 20px 0">Dados de exemplo · arraste imagens dos criativos para os cards</div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;clientName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Cliente Exemplo&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { filter: 'Todos', active: {}, account: 'Elvis', accountMenuOpen: false };
+  renderVals() {
+    const fmtBRL = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const fmtN = v => v >= 1000 ? (v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1}) + ' mil' : String(v);
+    const adsData = [
+      {id:'ad-inverno-video', name:'[LOJA360][Alcance][IG] Casaco — Coleção Inverno (fim 03-08)', campaign:'[LOJA360][Alcance][IG] Casaco — Coleção Inverno (…)', adset:'[LOJA360][Alcance][IG][Grande SP] Casaco — Inverno', format:'REELS', spend:148.25, imp:103603, reach:102056, clicks:49, linkClicks:0, revenue:0},
+      {id:'ad-depoimento', name:'[LOJA360][Conversões][IG] Depoimento — Cliente real', campaign:'[LOJA360][Conversões][IG] Depoimento — Cliente (…)', adset:'[LOJA360][Conversões][IG][Remarketing 30d] Depoimento', format:'FEED', spend:1290.55, imp:85200, reach:41300, clicks:1152, linkClicks:874, revenue:8420.00},
+      {id:'ad-bastidores', name:'[LOJA360][Tráfego][IG] Reels — Bastidores da produção', campaign:'[LOJA360][Tráfego][IG] Reels — Bastidores (…)', adset:'[LOJA360][Tráfego][IG][Interesses] Moda sustentável', format:'REELS', spend:980.30, imp:176800, reach:112600, clicks:1607, linkClicks:1490, revenue:0},
+      {id:'ad-institucional', name:'[LOJA360][Marca][IG] Vídeo institucional 30s', campaign:'[LOJA360][Marca][IG] Vídeo institucional (…)', adset:'[LOJA360][Marca][IG][Amplo 18-54 BR] Institucional', format:'STORIES', spend:1980.00, imp:602400, reach:418200, clicks:943, linkClicks:611, revenue:0},
+      {id:'ad-teaser', name:'[LOJA360][Engajamento][IG] Reels — Teaser do lançamento', campaign:'[LOJA360][Engajamento][IG] Teaser — Lançamento (…)', adset:'[LOJA360][Engajamento][IG][Envolvidos] Teaser', format:'REELS', spend:720.15, imp:110700, reach:58900, clicks:1000, linkClicks:702, revenue:0},
+      {id:'ad-oferta20', name:'[LOJA360][Conversões][IG] Estático — Oferta 20% OFF', campaign:'[LOJA360][Conversões][IG] Oferta 20% (…)', adset:'[LOJA360][Conversões][IG][Remarketing 7d] Oferta', format:'FEED', spend:640.80, imp:98700, reach:52300, clicks:1420, linkClicks:1180, revenue:5210.00},
+      {id:'ad-lookbook', name:'[LOJA360][Tráfego][IG] Carrossel — Lookbook 4 peças', campaign:'[LOJA360][Tráfego][IG] Lookbook (…)', adset:'[LOJA360][Tráfego][IG][Lookalike 2%] Lookbook', format:'FEED', spend:512.40, imp:87200, reach:61800, clicks:890, linkClicks:764, revenue:0},
+      {id:'ad-stories-flash', name:'[LOJA360][Conversões][IG] Stories — Flash sale 24h', campaign:'[LOJA360][Conversões][IG] Flash sale (…)', adset:'[LOJA360][Conversões][IG][Envolvidos 14d] Flash', format:'STORIES', spend:389.90, imp:64500, reach:48200, clicks:720, linkClicks:655, revenue:3140.00},
+      {id:'ad-unboxing', name:'[LOJA360][Engajamento][IG] Reels — Unboxing influencer', campaign:'[LOJA360][Engajamento][IG] Unboxing (…)', adset:'[LOJA360][Engajamento][IG][Seguidores] Unboxing', format:'REELS', spend:298.60, imp:142300, reach:97400, clicks:1810, linkClicks:340, revenue:0}
+    ].sort((a,b)=>b.spend-a.spend);
+    const formats = ['Todos','REELS','FEED','STORIES'];
+    const filters = formats.map(f=>({
+      label: f==='Todos'?'Todos':f.charAt(0)+f.slice(1).toLowerCase(),
+      bg: this.state.filter===f?'#0052ff':'#eef0f3',
+      color: this.state.filter===f?'#ffffff':'#0a0b0d',
+      select: ()=>this.setState({filter:f})
+    }));
+    const fmtInt = v => v.toLocaleString('pt-BR');
+    const pct = v => v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '%';
+    const shown = adsData.filter(a=>this.state.filter==='Todos'||a.format===this.state.filter);
+    const ads = shown.map((a,i)=>{
+      const isOn = this.state.active[a.id] !== false;
+      const cpr = a.linkClicks>0 ? a.spend/a.linkClicks : 0;
+      return {
+        slotId:a.id, rank:'#'+(i+1), name:a.name, campaign:a.campaign, adset:a.adset,
+        heroLabel:'CPR', heroValue:fmtBRL(cpr),
+        toggle:()=>this.setState(s=>({active:{...s.active,[a.id]: !isOn}})),
+        toggleBg: isOn?'#0052ff':'#a8acb3',
+        knobLeft: isOn?'29px':'3px',
+        metrics:[
+          {label:'Gasto', value:fmtBRL(a.spend)},
+          {label:'Impressões', value:fmtInt(a.imp)},
+          {label:'Alcance', value:fmtInt(a.reach)},
+          {label:'Frequência', value:(a.imp/a.reach).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})},
+          {label:'Cliques', value:fmtInt(a.clicks)},
+          {label:'Cliques no Link', value:fmtInt(a.linkClicks)},
+          {label:'CPM', value:fmtBRL(a.spend/a.imp*1000)},
+          {label:'CPC', value:a.clicks>0?fmtBRL(a.spend/a.clicks):fmtBRL(0)},
+          {label:'CPC Link', value:a.linkClicks>0?fmtBRL(a.spend/a.linkClicks):fmtBRL(0)},
+          {label:'CTR', value:pct(a.clicks/a.imp*100)},
+          {label:'CTR Link', value:pct(a.linkClicks/a.imp*100)},
+          {label:'CPR', value:fmtBRL(cpr)},
+          {label:'Receita', value:fmtBRL(a.revenue)},
+          {label:'ROAS', value:(a.spend>0?a.revenue/a.spend:0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'x'}
+        ]
+      };
+    });
+    const totSpend = adsData.reduce((s,a)=>s+a.spend,0);
+    const totImp = adsData.reduce((s,a)=>s+a.imp,0);
+    const totReach = adsData.reduce((s,a)=>s+a.reach,0);
+    const kpis = [
+      {label:'Gasto', value:fmtBRL(totSpend).replace(',00','')},
+      {label:'Impress.', value:fmtN(totImp)},
+      {label:'Alcance', value:fmtN(totReach)},
+      {label:'CPM', value:fmtBRL(totSpend/totImp*1000)}
+    ];
+    const accounts = ['Elvis','Wesley'].map(n=>{
+      const sel = this.state.account===n;
+      return {
+        name:n, initial:n[0], selected:sel,
+        bg: sel?'#eef0f3':'transparent',
+        avatarBg: sel?'#0052ff':'#eef0f3',
+        avatarColor: sel?'#ffffff':'#0a0b0d',
+        weight: sel?600:400,
+        select:()=>this.setState({account:n, accountMenuOpen:false})
+      };
+    });
+    return { clientName: this.props.clientName ?? 'Cliente Exemplo', kpis, filters, ads, adCount: shown.length,
+      account: this.state.account, accountInitial: this.state.account[0], accounts,
+      accountMenuOpen: this.state.accountMenuOpen,
+      toggleAccountMenu: ()=>this.setState(s=>({accountMenuOpen:!s.accountMenuOpen})) };
+  }
+}
+</script>
+</body>
+</html>

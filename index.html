@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#ffffff;}
+  a{color:#0052ff;text-decoration:none;}
+  a:hover{color:#003ecc;}
+  ::selection{background:#0052ff22;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#ffffff;color:#0a0b0d;font-family:Inter,-apple-system,system-ui,sans-serif;display:flex;flex-direction:column">
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:20px 36px;border-bottom:1px solid #dee1e6">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:36px;height:36px;border-radius:9999px;background:#0052ff;display:flex;align-items:center;justify-content:center;color:#ffffff;font-family:Inter,sans-serif;font-weight:800;font-size:16px">M</div>
+      <div>
+        <div style="font-family:Inter,sans-serif;font-weight:700;font-size:17px;letter-spacing:-0.01em">Relatório Meta Ads</div>
+        <div style="font-size:13px;color:#5b616e">{{ clientName }} · Conta 2984-4471</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="display:flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #dee1e6;border-radius:100px;padding:8px 14px;font-size:13.5px;color:#5b616e">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        1 – 31 de julho de 2026
+      </div>
+      <div style="background:#0052ff14;border:1px solid #0052ff40;color:#0052ff;border-radius:100px;padding:8px 14px;font-size:13px;font-weight:600">Campanhas ativas: 4</div>
+    </div>
+  </header>
+
+  <main style="flex:1;padding:28px 36px;display:flex;flex-direction:column;gap:28px;max-width:1440px;width:100%;margin:0 auto;box-sizing:border-box">
+
+    <section style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+        <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;padding:20px 22px;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:13px;color:#5b616e;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">{{ k.label }}</div>
+          <div style="font-family:Inter,sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.02em">{{ k.value }}</div>
+          <div style="font-size:13px;color:#5b616e">{{ k.sub }}</div>
+        </div>
+      </sc-for>
+    </section>
+
+    <section style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px">
+      <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <div style="font-family:Inter,sans-serif;font-weight:600;font-size:16px">Investimento diário</div>
+          <div style="font-size:13px;color:#5b616e">julho 2026</div>
+        </div>
+        <div style="flex:1;min-height:220px">{{ spendChart }}</div>
+      </div>
+      <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-family:Inter,sans-serif;font-weight:600;font-size:16px">Investimento por campanha</div>
+        <div style="display:flex;flex-direction:column;gap:14px;justify-content:center;flex:1">
+          <sc-for list="{{ campaignShare }}" as="c" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="display:flex;justify-content:space-between;font-size:13.5px">
+                <span style="color:#5b616e">{{ c.name }}</span>
+                <span style="color:#5b616e">{{ c.amount }}</span>
+              </div>
+              <div style="height:8px;background:#eef0f3;border-radius:4px;overflow:hidden">
+                <div style="height:100%;background:#0052ff;border-radius:4px;width:{{ c.pct }}"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#ffffff;border:1px solid #dee1e6;border-radius:24px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 14px">
+        <div style="font-family:Inter,sans-serif;font-weight:600;font-size:16px">Campanhas</div>
+        <div style="font-size:13px;color:#5b616e">Clique para ver conjuntos e anúncios</div>
+      </div>
+      <div style="display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr 0.8fr 0.8fr;gap:0 12px;padding:10px 24px;font-size:12px;font-weight:700;color:#5b616e;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid #dee1e6">
+        <div></div><div>Campanha</div><div style="text-align:right">Investimento</div><div style="text-align:right">Impressões</div><div style="text-align:right">Alcance</div><div style="text-align:right">CPC</div><div style="text-align:right">CPM</div>
+      </div>
+      <sc-for list="{{ campaigns }}" as="camp" hint-placeholder-count="4">
+        <div>
+          <div onClick="{{ camp.toggle }}" style="display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr 0.8fr 0.8fr;gap:0 12px;padding:14px 24px;align-items:center;font-size:14.5px;border-bottom:1px solid #eef0f3;cursor:pointer" style-hover="background:#f7f7f7">
+            <div style="color:#0052ff;font-size:12px;font-family:Sora,sans-serif">{{ camp.chevron }}</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="width:8px;height:8px;border-radius:50%;background:{{ camp.dotColor }};flex-shrink:0"></span>
+              <span style="font-weight:600;color:#0a0b0d">{{ camp.name }}</span>
+              <span style="font-size:11.5px;color:#5b616e;background:#dee1e6;border-radius:5px;padding:2px 7px">{{ camp.objective }}</span>
+            </div>
+            <div style="text-align:right;font-weight:600">{{ camp.spend }}</div>
+            <div style="text-align:right;color:#5b616e">{{ camp.impressions }}</div>
+            <div style="text-align:right;color:#5b616e">{{ camp.reach }}</div>
+            <div style="text-align:right;color:#5b616e">{{ camp.cpc }}</div>
+            <div style="text-align:right;color:#5b616e">{{ camp.cpm }}</div>
+          </div>
+          <sc-if value="{{ camp.open }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#f7f7f7;border-bottom:1px solid #eef0f3;padding:6px 24px 18px 24px">
+              <sc-for list="{{ camp.adsets }}" as="aset" hint-placeholder-count="2">
+                <div style="margin-top:12px">
+                  <div style="display:grid;grid-template-columns:32px 2.2fr 1fr 1fr 1fr 0.8fr 0.8fr;gap:0 12px;padding:8px 0;align-items:center;font-size:13.5px">
+                    <div></div>
+                    <div style="color:#5b616e;font-weight:600;padding-left:18px">▸ {{ aset.name }}</div>
+                    <div style="text-align:right;color:#5b616e">{{ aset.spend }}</div>
+                    <div style="text-align:right;color:#5b616e">{{ aset.impressions }}</div>
+                    <div style="text-align:right;color:#5b616e">{{ aset.reach }}</div>
+                    <div style="text-align:right;color:#5b616e">{{ aset.cpc }}</div>
+                    <div style="text-align:right;color:#5b616e">{{ aset.cpm }}</div>
+                  </div>
+                  <div style="display:flex;gap:12px;padding-left:62px;flex-wrap:wrap">
+                    <sc-for list="{{ aset.ads }}" as="ad" hint-placeholder-count="2">
+                      <div style="background:#ffffff;border:1px solid #dee1e6;border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;min-width:280px">
+                        <div style="width:52px;height:52px;border-radius:8px;background:linear-gradient(135deg,#eef0f3,#dee1e6);display:flex;align-items:center;justify-content:center;color:#5b616e;font-size:10px;flex-shrink:0;text-align:center">criativo</div>
+                        <div style="display:flex;flex-direction:column;gap:3px">
+                          <div style="font-size:13.5px;font-weight:600;color:#0a0b0d">{{ ad.name }}</div>
+                          <div style="font-size:12.5px;color:#5b616e">{{ ad.stats }}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </section>
+
+    <footer style="display:flex;justify-content:space-between;font-size:12.5px;color:#7c828a;padding-bottom:8px">
+      <span>Dados de exemplo — substitua por um export do Gerenciador de Anúncios</span>
+      <span>Gerado em 03/08/2026</span>
+    </footer>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;clientName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Cliente Exemplo&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { open: {} };
+  renderVals() {
+    const fmtBRL = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const fmtN = v => v.toLocaleString('pt-BR');
+    const data = [
+      {name:'Conversões — Coleção Inverno', objective:'Vendas', spend:5840.32, imp:412300, reach:198450, ads:[
+        {name:'Público frio — Lookalike 1%', spend:3210.10, imp:228400, reach:112300, creatives:[
+          {name:'Vídeo 15s — Casaco', imp:141200, cpc:1.42},
+          {name:'Carrossel — 4 looks', imp:87200, cpc:1.68}]},
+        {name:'Remarketing 30 dias', spend:2630.22, imp:183900, reach:86150, creatives:[
+          {name:'Estático — Oferta 20%', imp:98700, cpc:0.94},
+          {name:'Vídeo depoimento', imp:85200, cpc:1.12}]}]},
+      {name:'Tráfego — Blog e conteúdo', objective:'Tráfego', spend:2310.75, imp:389100, reach:241800, ads:[
+        {name:'Interesses — Moda sustentável', spend:2310.75, imp:389100, reach:241800, creatives:[
+          {name:'Estático — Guia de estilo', imp:212300, cpc:0.58},
+          {name:'Reels — Bastidores', imp:176800, cpc:0.61}]}]},
+      {name:'Reconhecimento — Marca', objective:'Alcance', spend:1980.00, imp:602400, reach:418200, ads:[
+        {name:'Amplo 18-54 BR', spend:1980.00, imp:602400, reach:418200, creatives:[
+          {name:'Vídeo institucional 30s', imp:602400, cpc:2.10}]}]},
+      {name:'Engajamento — Lançamento', objective:'Engajamento', spend:1265.40, imp:184500, reach:96300, ads:[
+        {name:'Seguidores + envolvidos', spend:1265.40, imp:184500, reach:96300, creatives:[
+          {name:'Reels — Teaser lançamento', imp:110700, cpc:0.72},
+          {name:'Estático — Contagem regressiva', imp:73800, cpc:0.88}]}]}
+    ];
+    const totSpend = data.reduce((a,c)=>a+c.spend,0);
+    const totImp = data.reduce((a,c)=>a+c.imp,0);
+    const totReach = data.reduce((a,c)=>a+c.reach,0);
+    const clicks = 8942;
+    const kpis = [
+      {label:'Investimento', value:fmtBRL(totSpend), sub:'total no período'},
+      {label:'Impressões', value:fmtN(totImp), sub:'freq. média 2,1'},
+      {label:'Alcance', value:fmtN(totReach), sub:'pessoas únicas'},
+      {label:'CPC / CPM', value:fmtBRL(totSpend/clicks).replace('R$ ','R$ ')+' / '+fmtBRL(totSpend/totImp*1000), sub:fmtN(clicks)+' cliques'}
+    ];
+    const dotColors = ['#0052ff','#05b169','#f4b000','#cf202f'];
+    const campaigns = data.map((c,i)=>({
+      name:c.name, objective:c.objective, dotColor:dotColors[i%4],
+      spend:fmtBRL(c.spend), impressions:fmtN(c.imp), reach:fmtN(c.reach),
+      cpc:fmtBRL(c.spend/(c.imp*0.021)), cpm:fmtBRL(c.spend/c.imp*1000),
+      open:!!this.state.open[i], chevron:this.state.open[i]?'▼':'▶',
+      toggle:()=>this.setState(s=>({open:{...s.open,[i]:!s.open[i]}})),
+      adsets:c.ads.map(a=>({
+        name:a.name, spend:fmtBRL(a.spend), impressions:fmtN(a.imp), reach:fmtN(a.reach),
+        cpc:fmtBRL(a.spend/(a.imp*0.021)), cpm:fmtBRL(a.spend/a.imp*1000),
+        ads:a.creatives.map(cr=>({name:cr.name, stats:fmtN(cr.imp)+' impressões · CPC '+fmtBRL(cr.cpc)}))
+      }))
+    }));
+    const campaignShare = data.map(c=>({name:c.name.split(' — ')[1]||c.name, amount:fmtBRL(c.spend), pct:(c.spend/totSpend*100).toFixed(1)+'%'}));
+    // daily spend bar chart (31 days)
+    const seed = [310,342,298,371,405,388,352,341,367,392,418,376,349,362,401,435,412,388,357,371,396,428,447,419,383,364,392,417,441,406,372];
+    const max = Math.max(...seed);
+    const W=760, H=220, bw=W/31;
+    const bars = seed.map((v,i)=>React.createElement('rect',{key:i,x:i*bw+2,y:H-28-(v/max)*(H-48),width:bw-4,height:(v/max)*(H-48),rx:3,fill:i===22?'#0052ff':'#dee1e6'}));
+    const labels = [0,6,13,20,27,30].map(i=>React.createElement('text',{key:'l'+i,x:i*bw+bw/2,y:H-8,fill:'#7c828a',fontSize:11,textAnchor:'middle',fontFamily:"Inter,sans-serif"},String(i+1)+'/07'));
+    const peak = React.createElement('text',{x:22*bw+bw/2,y:H-32-(seed[22]/max)*(H-48)-8,fill:'#0052ff',fontSize:12,fontWeight:700,textAnchor:'middle',fontFamily:"Inter,sans-serif"},'R$ 447');
+    const spendChart = React.createElement('svg',{viewBox:`0 0 ${W} ${H}`,style:{width:'100%',height:'100%',display:'block'}},...bars,...labels,peak);
+    return { clientName: this.props.clientName ?? 'Cliente Exemplo', kpis, campaigns, campaignShare, spendChart };
+  }
+}
+</script>
+</body>
+</html>
