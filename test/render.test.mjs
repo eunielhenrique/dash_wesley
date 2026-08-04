@@ -30,7 +30,11 @@ check('cards do mobile renderizados', d.querySelectorAll('.card').length===6, d.
 check('linhas de campanha', d.querySelectorAll('.trow:not(.hd)').length===4, d.querySelectorAll('.trow:not(.hd)').length);
 check('barras do gráfico = dias da série', d.querySelectorAll('#chart rect').length===stub.daily.length, d.querySelectorAll('#chart rect').length);
 check('cabeçalho mobile não tem mais pílula de data', !d.getElementById('mPeriod'), 'ainda existe');
+check('no lugar dela há botão de atualizar', !!d.getElementById('mRefresh'), 'sem botão');
 check('cabeçalho desktop não tem mais data', !d.getElementById('dPeriod'), 'ainda existe');
+check('no lugar dela há botão de atualizar', !!d.getElementById('dRefresh'), 'sem botão');
+check('botão desktop é rotulado', /Atualizar/.test(d.getElementById('dRefresh').textContent), d.getElementById('dRefresh').textContent);
+check('botão liberado quando o dado já chegou', d.getElementById('dRefresh').disabled === false, d.getElementById('dRefresh').disabled);
 check('selo mostra veiculando agora, vindo do activeCount', d.getElementById('dActive').textContent==='Veiculando agora: 2', d.getElementById('dActive').textContent);
 check('selo não repete a contagem de linhas da tabela', d.getElementById('dActive').textContent!=='Veiculando agora: 4', d.getElementById('dActive').textContent);
 check('campanha pausada marcada na tabela', [...d.querySelectorAll('.trow .obj')].filter(e=>e.textContent==='Pausada').length===2, [...d.querySelectorAll('.trow .obj')].map(e=>e.textContent).join(','));
@@ -74,6 +78,13 @@ console.log('\n[A2] atualização automática');
   w.document.dispatchEvent(new w.Event('visibilitychange'));
   await new Promise(r => setTimeout(r, 120));
   check('voltar para a aba refaz a busca', calls === 1, calls);
+
+  const btn = d.getElementById('mRefresh');
+  btn.dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+  check('clicar em atualizar trava o botão e gira o ícone', btn.disabled && btn.classList.contains('busy'), `${btn.disabled}/${btn.className}`);
+  await new Promise(r => setTimeout(r, 120));
+  check('botão dispara nova busca', calls === 2, calls);
+  check('botão volta a ficar clicável ao terminar', !btn.disabled && !btn.classList.contains('busy'), `${btn.disabled}/${btn.className}`);
 
   // com vídeo tocando, a atualização não pode cortar o play
   const vid = d.querySelector('video.vid');
