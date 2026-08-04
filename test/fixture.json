@@ -121,13 +121,17 @@
        "name": "Vídeo 15s",
        "imp": 141200,
        "cpc": 1.42,
-       "active": true
+       "active": true,
+       "thumb": "https://cdn.example/c00.jpg",
+       "video": null
       },
       {
        "name": "Carrossel",
        "imp": 87200,
        "cpc": 1.68,
-       "active": true
+       "active": true,
+       "thumb": null,
+       "video": null
       }
      ],
      "active": true
@@ -153,13 +157,17 @@
        "name": "Vídeo 15s",
        "imp": 121200,
        "cpc": 1.52,
-       "active": true
+       "active": true,
+       "thumb": "https://cdn.example/c10.jpg",
+       "video": null
       },
       {
        "name": "Carrossel",
        "imp": 77200,
        "cpc": 1.78,
-       "active": true
+       "active": true,
+       "thumb": null,
+       "video": null
       }
      ],
      "active": true
@@ -185,13 +193,17 @@
        "name": "Vídeo 15s",
        "imp": 101200,
        "cpc": 1.6199999999999999,
-       "active": false
+       "active": false,
+       "thumb": "https://cdn.example/c20.jpg",
+       "video": null
       },
       {
        "name": "Carrossel",
        "imp": 67200,
        "cpc": 1.88,
-       "active": false
+       "active": false,
+       "thumb": null,
+       "video": null
       }
      ],
      "active": false
@@ -217,13 +229,17 @@
        "name": "Vídeo 15s",
        "imp": 81200,
        "cpc": 1.72,
-       "active": false
+       "active": false,
+       "thumb": "https://cdn.example/c30.jpg",
+       "video": null
       },
       {
        "name": "Carrossel",
        "imp": 57200,
        "cpc": 1.98,
-       "active": false
+       "active": false,
+       "thumb": null,
+       "video": null
       }
      ],
      "active": false

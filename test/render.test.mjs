@@ -30,7 +30,7 @@ check('cards do mobile renderizados', d.querySelectorAll('.card').length===6, d.
 check('linhas de campanha', d.querySelectorAll('.trow:not(.hd)').length===4, d.querySelectorAll('.trow:not(.hd)').length);
 check('barras do gráfico = dias da série', d.querySelectorAll('#chart rect').length===stub.daily.length, d.querySelectorAll('#chart rect').length);
 check('cabeçalho mobile não tem mais pílula de data', !d.getElementById('mPeriod'), 'ainda existe');
-check('período real no cabeçalho desktop', /06\/07 – 04\/08 de 2026/.test(d.getElementById('dPeriod').textContent), d.getElementById('dPeriod').textContent);
+check('cabeçalho desktop não tem mais data', !d.getElementById('dPeriod'), 'ainda existe');
 check('selo mostra veiculando agora, vindo do activeCount', d.getElementById('dActive').textContent==='Veiculando agora: 2', d.getElementById('dActive').textContent);
 check('selo não repete a contagem de linhas da tabela', d.getElementById('dActive').textContent!=='Veiculando agora: 4', d.getElementById('dActive').textContent);
 check('campanha pausada marcada na tabela', [...d.querySelectorAll('.trow .obj')].filter(e=>e.textContent==='Pausada').length===2, [...d.querySelectorAll('.trow .obj')].map(e=>e.textContent).join(','));
@@ -56,6 +56,9 @@ check('card não repete campanha e conjunto', d.querySelectorAll('.names .c').le
   const tree = d.getElementById('tbody').innerHTML;
   check('expandir campanha revela conjuntos e anúncios', /Conjunto A2/.test(tree) && /Vídeo 15s/.test(tree), tree.slice(0, 80));
   check('conjunto e anúncio pausados marcados na árvore', (tree.match(/· pausado/g) || []).length >= 2, (tree.match(/· pausado/g) || []).length);
+  check('árvore do desktop mostra a imagem real do criativo', d.querySelectorAll('.cr img.thumb').length === 1, d.querySelectorAll('.cr img.thumb').length);
+  check('criativo sem imagem mantém o quadro cinza', d.querySelectorAll('.cr div.thumb').length === 1, d.querySelectorAll('.cr div.thumb').length);
+  check('nomes da árvore sem a nomenclatura', !/\[GOV360\]|\[WESLEY\]/.test(tree), (tree.match(/\[[A-Z0-9]+\]/g)||[]).slice(0,3).join(','));
 }
 check('nenhum NaN/Infinity/undefined na tela', !/NaN|Infinity|undefined/.test(txt), (txt.match(/NaN|Infinity|undefined/g)||[]).join(','));
 check('CPC/CPM do desktop calculado dos cliques reais', /8\.942 cliques/.test(txt), 'cliques');
@@ -66,7 +69,7 @@ d = await boot({ apiOk:false });
 check('não mostra card nenhum', d.querySelectorAll('.card').length===0, d.querySelectorAll('.card').length);
 check('rodapé explica a falha', /Não foi possível carregar: META_ACCESS_TOKEN/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('trilho mostra estado honesto', /Não foi possível carregar/.test(d.getElementById('rail').textContent), d.getElementById('rail').textContent.slice(0,60));
-check('cabeçalho desktop mantém o período honesto', d.getElementById('dPeriod').textContent==='—', d.getElementById('dPeriod').textContent);
+check('sem dado, rodapé desktop explica em vez de mostrar data', /Não foi possível carregar/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('sem número inventado na tela', !/R\$ [1-9]/.test(d.body.textContent), (d.body.textContent.match(/R\$ [^\s]+/g)||[]).slice(0,3).join(','));
 
 console.log(fail?`\n${fail} FALHA(S)`:'\nTODOS OS TESTES DE RENDER PASSARAM');

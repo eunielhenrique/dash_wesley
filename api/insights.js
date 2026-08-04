@@ -283,6 +283,8 @@ export default async function handler(req, res) {
                     return {
                       name: a.name,
                       active: isOn(a),
+                      thumb: media[a.id]?.thumb || null,
+                      video: media[a.id]?.video || null,
                       imp: num(am.impressions),
                       cpc: num(am.clicks) ? num(am.spend) / num(am.clicks) : 0,
                     };

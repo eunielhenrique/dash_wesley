@@ -109,6 +109,7 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
 .creatives{display:flex;gap:12px;padding-left:62px;flex-wrap:wrap}
 .cr{background:#fff;border:1px solid #dee1e6;border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;min-width:280px}
 .cr .thumb{width:52px;height:52px;border-radius:8px;background:linear-gradient(135deg,#eef0f3,#dee1e6);display:flex;align-items:center;justify-content:center;color:#5b616e;font-size:10px;flex-shrink:0;text-align:center}
+img.cr-x,.cr img.thumb{object-fit:cover;display:block}
 .cr .cn{font-size:13.5px;font-weight:600}
 .cr .cs{font-size:12.5px;color:#5b616e;margin-top:3px}
 .dfoot{display:flex;justify-content:space-between;font-size:12.5px;color:#7c828a;padding-bottom:8px}
@@ -151,7 +152,6 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
       </div>
     </div>
     <div class="hright">
-      <div class="datebox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="dPeriod">—</span></div>
       <div class="activebadge" id="dActive">—</div>
     </div>
   </div>
@@ -260,12 +260,12 @@ function table(){
   const dots=['#0052ff','#05b169','#f4b000','#cf202f'];
   document.getElementById('tbody').innerHTML=camps.map((c,i)=>{
     let h=`<div class="trow" data-c="${i}"><div class="chev">${open[i]?'\u25bc':'\u25b6'}</div>
-      <div class="cname"><span class="dot" style="background:${dots[i%4]}"></span><span style="font-weight:600">${c.name}</span><span class="obj">${c.obj}</span>${c.active===false?'<span class="obj" style="background:#fde8ea;color:#cf202f">Pausada</span>':''}</div>
+      <div class="cname"><span class="dot" style="background:${dots[i%4]}"></span><span style="font-weight:600">${criativo(c.name)}</span><span class="obj">${c.obj}</span>${c.active===false?'<span class="obj" style="background:#fde8ea;color:#cf202f">Pausada</span>':''}</div>
       <div class="num b">${brl(c.spend)}</div><div class="num">${int(c.imp)}</div><div class="num">${int(c.reach)}</div><div class="num">${brl(c.spend/(c.imp*.021))}</div><div class="num">${brl(c.spend/c.imp*1000)}</div></div>`;
     if(open[i]){
       h+=`<div class="sub2">`+c.adsets.map(a=>`<div style="margin-top:12px">
-        <div class="arow"><div></div><div class="an">\u25b8 ${a.name}</div><div class="num">${brl(a.spend)}</div><div class="num">${int(a.imp)}</div><div class="num">${int(a.reach)}</div><div class="num">${brl(a.spend/(a.imp*.021))}</div><div class="num">${brl(a.spend/a.imp*1000)}</div></div>
-        <div class="creatives">${a.creatives.map(cr=>`<div class="cr"><div class="thumb">criativo</div><div><div class="cn">${cr.name}${cr.active===false?' <span style="font-weight:400;color:#a8acb3">· pausado</span>':''}</div><div class="cs">${int(cr.imp)} impress\u00f5es \u00b7 CPC ${brl(cr.cpc)}</div></div></div>`).join('')}</div>
+        <div class="arow"><div></div><div class="an">\u25b8 ${criativo(a.name)}</div><div class="num">${brl(a.spend)}</div><div class="num">${int(a.imp)}</div><div class="num">${int(a.reach)}</div><div class="num">${brl(a.spend/(a.imp*.021))}</div><div class="num">${brl(a.spend/a.imp*1000)}</div></div>
+        <div class="creatives">${a.creatives.map(cr=>`<div class="cr">${cr.thumb?`<img class="thumb" src="${cr.thumb}" alt="" loading="lazy">`:'<div class="thumb">criativo</div>'}<div><div class="cn">${criativo(cr.name)}${cr.active===false?' <span style="font-weight:400;color:#a8acb3">· pausado</span>':''}</div><div class="cs">${int(cr.imp)} impress\u00f5es \u00b7 CPC ${brl(cr.cpc)}</div></div></div>`).join('')}</div>
       </div>`).join('')+`</div>`;
     }
     return h;
@@ -274,7 +274,6 @@ function table(){
 function fmtRange(r){if(!r)return '—';const d=v=>{const t=v.split('-');return t[2]+'/'+t[1]};return d(r.since)+' – '+d(r.until)}
 function chrome(){
   const range=loading?'…':loadError?'—':fmtRange(period);
-  document.getElementById('dPeriod').textContent=loading?'carregando…':loadError?'—':fmtRange(period)+' de '+(period?period.since.split('-')[0]:'');
   document.getElementById('dActive').textContent=loading?'…':loadError?'—':'Veiculando agora: '+activeCount;
   const note=loading?'Carregando dados da conta '+account+'…'
     :loadError?'Não foi possível carregar: '+loadError
