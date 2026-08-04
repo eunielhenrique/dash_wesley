@@ -182,10 +182,10 @@ const int=v=>v.toLocaleString('pt-BR');
 const pct=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
 const dec=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const kmil=v=>v>=1000?(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil':String(v);
-const ACCOUNTS=['Gov360','Wesley'];
-const ACCOUNT_KEY={'Gov360':'gov360','Wesley':'wesley'};
+const ACCOUNTS=['Elvis','Wesley'];
+const ACCOUNT_KEY={'Elvis':'elvis','Wesley':'wesley'};
 const stored=localStorage.getItem('ma-account');
-let filter='Todos',account=ACCOUNTS.includes(stored)?stored:'Gov360';
+let filter='Todos',account=ACCOUNTS.includes(stored)?stored:'Elvis';
 const open={};
 const imgs=JSON.parse(localStorage.getItem('ma-imgs')||'{}');
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}

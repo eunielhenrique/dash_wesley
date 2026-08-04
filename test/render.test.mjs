@@ -35,10 +35,10 @@ check('selo mostra veiculando agora, vindo do activeCount', d.getElementById('dA
 check('selo não repete a contagem de linhas da tabela', d.getElementById('dActive').textContent!=='Veiculando agora: 4', d.getElementById('dActive').textContent);
 check('campanha pausada marcada na tabela', [...d.querySelectorAll('.trow .obj')].filter(e=>e.textContent==='Pausada').length===2, [...d.querySelectorAll('.trow .obj')].map(e=>e.textContent).join(','));
 check('tabela avisa que o recorte é entrega no período', /Com entrega no período/.test(d.querySelector('.thead2 small').textContent), d.querySelector('.thead2 small').textContent);
-check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta Gov360/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
-check('contas do menu = Gov360 e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Gov360/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
-check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Gov360', d.getElementById('acctName').textContent);
-check('nenhum "Elvis" sobrou', !/Elvis/.test(txt), 'achou Elvis');
+check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
+check('contas do menu = Elvis e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Elvis/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
+check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Elvis', d.getElementById('acctName').textContent);
+check('rodapé nomeia a conta certa', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('chavinha do card reflete estado real (2 pausados de 6)', d.querySelectorAll('.sw.off').length===2, d.querySelectorAll('.sw.off').length);
 check('chavinha não é mais clicável (não pausa de verdade)', !d.querySelector('[data-sw]'), 'ainda tem data-sw');
 // a árvore (conjuntos/anúncios) só existe com a campanha expandida

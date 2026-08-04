@@ -66,19 +66,18 @@ const run = async (env, query) => {
 
 let fail = 0;
 const check = (l, c, x = '') => { console.log((c ? '  ✓ ' : '  ✗ ') + l + (c ? '' : ' -> ' + x)); if (!c) fail++; };
-const ENV = { META_ACCESS_TOKEN: 't', META_AD_ACCOUNT_GOV360: 'act_111', META_AD_ACCOUNT_WESLEY: 'act_222' };
+const ENV = { META_ACCESS_TOKEN: 't', META_AD_ACCOUNT_ELVIS: 'act_111', META_AD_ACCOUNT_GOV360: '', META_AD_ACCOUNT_WESLEY: 'act_222' };
 
 console.log('\n[1] configuração ausente');
-let r = await run({ META_ACCESS_TOKEN: '' }, { account: 'gov360' });
-check('sem token responde 503 em vez de fingir dado', r.code === 503, r.code);
-check('mensagem aponta a variável que falta', /META_ACCESS_TOKEN/.test(r.body.error), r.body.error);
-r = await run({ META_ACCESS_TOKEN: 't', META_AD_ACCOUNT_GOV360: '' }, { account: 'gov360' });
-check('usa o ID padrão quando a env var não existe', r.code === 200, r.code);
-r = await run(ENV, { account: 'elvis' });
+let r = await run({ META_ACCESS_TOKEN: '', META_AD_ACCOUNT_ELVIS: '', META_AD_ACCOUNT_GOV360: '' }, { account: 'elvis' });
+check('sem env var nenhuma ainda responde (token embutido)', r.code === 200, r.code);
+r = await run(ENV, { account: 'joao' });
 check('conta desconhecida responde 400', r.code === 400, r.code);
+r = await run(ENV, { account: 'gov360' });
+check('alias gov360 aponta para a conta do Elvis', r.code === 200 && r.body.account === 'Elvis', r.body?.account);
 
 console.log('\n[2] hierarquia vem das entidades, não dos insights');
-r = await run(ENV, { account: 'gov360' });
+r = await run(ENV, { account: 'elvis' });
 const b = r.body;
 const ad = (n) => b.ads.find((x) => x.name === n);
 const camp = (n) => b.camps.find((x) => x.name === n);
@@ -113,11 +112,11 @@ check('campanhas ativas', b.activeCount === 1, b.activeCount);
 check('conjuntos ativos', b.activeAdsets === 1, b.activeAdsets);
 check('anúncios ativos', b.activeAds === 1, b.activeAds);
 check('ativos != listados (recortes diferentes)', b.activeAds !== b.ads.length, `${b.activeAds} vs ${b.ads.length}`);
-check('token não vaza na resposta', !JSON.stringify(b).includes('access_token'), 'vazou');
+check('token não vaza na resposta', !JSON.stringify(b).includes('access_token') && !JSON.stringify(b).includes('EAA'), 'vazou');
 
 console.log('\n[5] erro da Graph API');
 globalThis.fetch = async () => ({ ok: false, status: 400, json: async () => ({ error: { message: 'Invalid OAuth access token' } }) });
-r = await run({ ...ENV, META_ACCESS_TOKEN: 'ruim' }, { account: 'gov360' });
+r = await run({ ...ENV, META_ACCESS_TOKEN: 'ruim' }, { account: 'elvis' });
 check('propaga erro sem inventar dado', r.code === 400 && /OAuth/.test(r.body.error), r.code + ' ' + JSON.stringify(r.body));
 
 console.log(fail ? `\n${fail} FALHA(S)` : '\nTODOS OS TESTES PASSARAM');

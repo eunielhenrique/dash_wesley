@@ -27,8 +27,51 @@ Vercel Function que consulta a Graph API v20 e devolve os dados já no formato
 que a tela usa. **O token nunca chega ao navegador** — a página estática só
 enxerga os números agregados.
 
-Contas disponíveis no seletor: **Gov360** e **Wesley**. Trocar de conta refaz a
-chamada. A janela padrão é de 30 dias (`/api/insights?account=gov360&days=30`).
+Contas disponíveis no seletor: **Elvis** e **Wesley**. Trocar de conta refaz a
+chamada. A janela padrão é de 30 dias (`/api/insights?account=elvis&days=30`).
+
+### De onde vem a hierarquia
+
+Campanha → conjunto → anúncio vem das **entidades** (`/campaigns`, `/adsets`,
+`/ads`), não dos insights. Insights só enxergam quem teve entrega, então um
+anúncio no ar que ainda não gastou seria invisível — foi exatamente o que
+aconteceu com um anúncio real da conta Wesley.
+
+As métricas dos insights são penduradas nessa árvore. Quem não tem entrega
+aparece zerado, nunca com número inventado, e sem posicionamento chutado
+(`format: null`).
+
+Entra na tela quem **está no ar agora** ou **gastou na janela**. Fica de fora só
+o que está pausado e sem entrega — campanha antiga que viraria ruído (a conta
+Gov360 tem 21 campanhas pausadas).
+
+O selo "Veiculando agora: N" conta `effective_status === 'ACTIVE'` em todas as
+campanhas da conta, e por isso pode divergir do número de linhas da tabela. São
+recortes diferentes de propósito. Conjuntos e anúncios pausados ficam marcados
+*· pausado* na árvore.
+
+### A chavinha do card não pausa nada
+
+No mobile ela mostra o estado real do anúncio e **não é clicável**. Um botão que
+parece pausar mas não pausa faria alguém achar que desligou um anúncio que
+continua gastando.
+
+### Credenciais
+
+O token da Meta e os IDs das duas contas estão embutidos em `api/insights.js`, a
+pedido do dono das contas — a dash funciona sem nenhuma configuração externa.
+
+Definir `META_ACCESS_TOKEN` nas variáveis de ambiente da Vercel sobrescreve o
+token embutido, e `META_AD_ACCOUNT_ELVIS` / `META_AD_ACCOUNT_WESLEY`
+sobrescrevem os IDs. É o caminho recomendado quando o token for trocado, porque
+variável de ambiente não vai para o Git.
+
+| Conta na dash | Conta de anúncio |
+|---|---|
+| **Elvis** | `act_531444469411947` (GOV360) |
+| **Wesley** | `act_902191367681121` (WESLEY CEZAR) |
+
+O valor `gov360` segue aceito como alias de `elvis` na querystring.
 
 ### De onde vem a hierarquia
 

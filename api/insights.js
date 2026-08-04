@@ -12,9 +12,14 @@ const API = 'https://graph.facebook.com/v20.0';
 // aqui como padrão para que só o token precise ser configurado; a env var, se
 // existir, tem prioridade (troca de conta sem mexer no código).
 const ACCOUNTS = {
-  gov360: { label: 'Gov360', env: 'META_AD_ACCOUNT_GOV360', id: 'act_531444469411947' },
-  wesley: { label: 'Wesley', env: 'META_AD_ACCOUNT_WESLEY', id: 'act_902191367681121' },
+  elvis: { label: 'Elvis', env: ['META_AD_ACCOUNT_ELVIS', 'META_AD_ACCOUNT_GOV360'], id: 'act_531444469411947' },
+  wesley: { label: 'Wesley', env: ['META_AD_ACCOUNT_WESLEY'], id: 'act_902191367681121' },
 };
+ACCOUNTS.gov360 = ACCOUNTS.elvis;   // a conta Gov360 é a do Elvis; alias mantido
+
+// Token embutido a pedido do dono das contas. META_ACCESS_TOKEN, se definida na
+// Vercel, tem prioridade e é o lugar certo para ele.
+const FALLBACK_TOKEN = 'EAANtVkCtsPsBQ3WwgZC8hBk4edb5mcaWRdYCEgwVebPC7iZCmZBSe7axnW82XZAf8xGwH7WruwkDhVeZCCwupjlA6z87Frwo6Er965qe3IvLibOEsMVwRHREG4ZBq1iOPQvBN9eVs9KIyPZAZCZCXpYJGbpaMoZCMWgBU1xZB0zcUt2IjTbuBwhYvsZBTC3TkTZBAUAZDZD';
 
 // Objetivos da Meta -> rótulo curto que a tabela do desktop mostra.
 const OBJECTIVES = {
@@ -81,7 +86,7 @@ async function graph(path, params, token) {
 }
 
 export default async function handler(req, res) {
-  const token = process.env.META_ACCESS_TOKEN;
+  const token = process.env.META_ACCESS_TOKEN || FALLBACK_TOKEN;
   const key = String(req.query.account || 'gov360').toLowerCase();
   const account = ACCOUNTS[key];
 
@@ -91,9 +96,9 @@ export default async function handler(req, res) {
   if (!token) {
     return res.status(503).json({ error: 'META_ACCESS_TOKEN não configurado neste projeto.' });
   }
-  const actId = process.env[account.env] || account.id;
+  const actId = account.env.map((e) => process.env[e]).find(Boolean) || account.id;
   if (!actId) {
-    return res.status(503).json({ error: `${account.env} não configurado neste projeto.` });
+    return res.status(503).json({ error: `${account.env[0]} não configurado neste projeto.` });
   }
 
   const days = Math.min(Math.max(parseInt(req.query.days, 10) || 30, 1), 365);
