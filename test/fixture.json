@@ -1,0 +1,320 @@
+{
+ "account": "Gov360",
+ "period": {
+  "since": "2026-07-06",
+  "until": "2026-08-04"
+ },
+ "clicks": 8942,
+ "ads": [
+  {
+   "id": "ad0",
+   "name": "[GOV360] Anúncio 1 — criativo de vídeo",
+   "campaign": "Campanha 1",
+   "adset": "Conjunto 1",
+   "format": "REELS",
+   "spend": 1900,
+   "imp": 600000,
+   "reach": 410000,
+   "clicks": 900,
+   "linkClicks": 600,
+   "revenue": 0
+  },
+  {
+   "id": "ad1",
+   "name": "[GOV360] Anúncio 2 — criativo de vídeo",
+   "campaign": "Campanha 2",
+   "adset": "Conjunto 2",
+   "format": "FEED",
+   "spend": 1670,
+   "imp": 530000,
+   "reach": 360000,
+   "clicks": 810,
+   "linkClicks": 520,
+   "revenue": 3900
+  },
+  {
+   "id": "ad2",
+   "name": "[GOV360] Anúncio 3 — criativo de vídeo",
+   "campaign": "Campanha 3",
+   "adset": "Conjunto 1",
+   "format": "STORIES",
+   "spend": 1440,
+   "imp": 460000,
+   "reach": 310000,
+   "clicks": 720,
+   "linkClicks": 440,
+   "revenue": 0
+  },
+  {
+   "id": "ad3",
+   "name": "[GOV360] Anúncio 4 — criativo de vídeo",
+   "campaign": "Campanha 1",
+   "adset": "Conjunto 2",
+   "format": "REELS",
+   "spend": 1210,
+   "imp": 390000,
+   "reach": 260000,
+   "clicks": 630,
+   "linkClicks": 360,
+   "revenue": 3300
+  },
+  {
+   "id": "ad4",
+   "name": "[GOV360] Anúncio 5 — criativo de vídeo",
+   "campaign": "Campanha 2",
+   "adset": "Conjunto 1",
+   "format": "FEED",
+   "spend": 980,
+   "imp": 320000,
+   "reach": 210000,
+   "clicks": 540,
+   "linkClicks": 280,
+   "revenue": 0
+  },
+  {
+   "id": "ad5",
+   "name": "[GOV360] Anúncio 6 — criativo de vídeo",
+   "campaign": "Campanha 3",
+   "adset": "Conjunto 2",
+   "format": "STORIES",
+   "spend": 750,
+   "imp": 250000,
+   "reach": 160000,
+   "clicks": 450,
+   "linkClicks": 200,
+   "revenue": 2700
+  }
+ ],
+ "camps": [
+  {
+   "name": "Campanha 1 — Vendas",
+   "obj": "Vendas",
+   "spend": 5840,
+   "imp": 412300,
+   "reach": 198450,
+   "adsets": [
+    {
+     "name": "Conjunto A0",
+     "spend": 3210,
+     "imp": 228400,
+     "reach": 112300,
+     "creatives": [
+      {
+       "name": "Vídeo 15s",
+       "imp": 141200,
+       "cpc": 1.42
+      },
+      {
+       "name": "Carrossel",
+       "imp": 87200,
+       "cpc": 1.68
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Campanha 2 — Tráfego",
+   "obj": "Tráfego",
+   "spend": 4640,
+   "imp": 352300,
+   "reach": 168450,
+   "adsets": [
+    {
+     "name": "Conjunto A1",
+     "spend": 2510,
+     "imp": 188400,
+     "reach": 92300,
+     "creatives": [
+      {
+       "name": "Vídeo 15s",
+       "imp": 121200,
+       "cpc": 1.52
+      },
+      {
+       "name": "Carrossel",
+       "imp": 77200,
+       "cpc": 1.78
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Campanha 3 — Alcance",
+   "obj": "Alcance",
+   "spend": 3440,
+   "imp": 292300,
+   "reach": 138450,
+   "adsets": [
+    {
+     "name": "Conjunto A2",
+     "spend": 1810,
+     "imp": 148400,
+     "reach": 72300,
+     "creatives": [
+      {
+       "name": "Vídeo 15s",
+       "imp": 101200,
+       "cpc": 1.6199999999999999
+      },
+      {
+       "name": "Carrossel",
+       "imp": 67200,
+       "cpc": 1.88
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Campanha 4 — Engajamento",
+   "obj": "Engajamento",
+   "spend": 2240,
+   "imp": 232300,
+   "reach": 108450,
+   "adsets": [
+    {
+     "name": "Conjunto A3",
+     "spend": 1110,
+     "imp": 108400,
+     "reach": 52300,
+     "creatives": [
+      {
+       "name": "Vídeo 15s",
+       "imp": 81200,
+       "cpc": 1.72
+      },
+      {
+       "name": "Carrossel",
+       "imp": 57200,
+       "cpc": 1.98
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "daily": [
+  {
+   "date": "2026-07-06",
+   "spend": 280.0
+  },
+  {
+   "date": "2026-07-07",
+   "spend": 359.73
+  },
+  {
+   "date": "2026-07-08",
+   "spend": 369.84
+  },
+  {
+   "date": "2026-07-09",
+   "spend": 304.7
+  },
+  {
+   "date": "2026-07-10",
+   "spend": 227.89
+  },
+  {
+   "date": "2026-07-11",
+   "spend": 213.7
+  },
+  {
+   "date": "2026-07-12",
+   "spend": 278.85
+  },
+  {
+   "date": "2026-07-13",
+   "spend": 367.13
+  },
+  {
+   "date": "2026-07-14",
+   "spend": 401.04
+  },
+  {
+   "date": "2026-07-15",
+   "spend": 353.09
+  },
+  {
+   "date": "2026-07-16",
+   "spend": 271.04
+  },
+  {
+   "date": "2026-07-17",
+   "spend": 234.0
+  },
+  {
+   "date": "2026-07-18",
+   "spend": 279.71
+  },
+  {
+   "date": "2026-07-19",
+   "spend": 369.82
+  },
+  {
+   "date": "2026-07-20",
+   "spend": 425.15
+  },
+  {
+   "date": "2026-07-21",
+   "spend": 398.53
+  },
+  {
+   "date": "2026-07-22",
+   "spend": 318.09
+  },
+  {
+   "date": "2026-07-23",
+   "spend": 261.47
+  },
+  {
+   "date": "2026-07-24",
+   "spend": 284.41
+  },
+  {
+   "date": "2026-07-25",
+   "spend": 369.49
+  },
+  {
+   "date": "2026-07-26",
+   "spend": 442.17
+  },
+  {
+   "date": "2026-07-27",
+   "spend": 439.3
+  },
+  {
+   "date": "2026-07-28",
+   "spend": 367.2
+  },
+  {
+   "date": "2026-07-29",
+   "spend": 295.84
+  },
+  {
+   "date": "2026-07-30",
+   "spend": 294.5
+  },
+  {
+   "date": "2026-07-31",
+   "spend": 368.09
+  },
+  {
+   "date": "2026-08-01",
+   "spend": 452.63
+  },
+  {
+   "date": "2026-08-02",
+   "spend": 474.07
+  },
+  {
+   "date": "2026-08-03",
+   "spend": 416.38
+  },
+  {
+   "date": "2026-08-04",
+   "spend": 336.27
+  }
+ ]
+}

@@ -128,7 +128,7 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
         </div>
       </div>
     </div>
-    <div class="period">1–31 jul 2026</div>
+    <div class="period" id="mPeriod">—</div>
   </div>
   <div class="menu" id="menu"></div>
   <div class="kpis" id="kpis"></div>
@@ -137,7 +137,7 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
 <main>
   <div class="mhead"><b>Anúncios patrocinados</b><small><span id="count"></span> ativos · deslize →</small></div>
   <div class="rail" id="rail"></div>
-  <div class="foot">Dados de exemplo · arraste imagens dos criativos para os cards</div>
+  <div class="foot" id="mFoot"></div>
 </main>
 </div>
 <!-- DESKTOP -->
@@ -151,8 +151,8 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
       </div>
     </div>
     <div class="hright">
-      <div class="datebox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>1 – 31 de julho de 2026</div>
-      <div class="activebadge">Campanhas ativas: 4</div>
+      <div class="datebox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="dPeriod">—</span></div>
+      <div class="activebadge" id="dActive">—</div>
     </div>
   </div>
   <main>
@@ -172,45 +172,27 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
       <div class="trow hd"><div></div><div>Campanha</div><div class="num">Investimento</div><div class="num">Impressões</div><div class="num">Alcance</div><div class="num">CPC</div><div class="num">CPM</div></div>
       <div id="tbody"></div>
     </div>
-    <div class="dfoot"><span>Dados de exemplo — substitua por um export do Gerenciador de Anúncios</span><span>Gerado em 04/08/2026</span></div>
+    <div class="dfoot"><span id="dNote"></span><span id="dStamp"></span></div>
   </main>
 </div>
 <script>
-const ads=[
-{id:'ad-inverno-video',name:'[LOJA360][Alcance][IG] Casaco \u2014 Cole\u00e7\u00e3o Inverno (fim 03-08)',campaign:'[LOJA360][Alcance][IG] Casaco \u2014 Cole\u00e7\u00e3o Inverno (\u2026)',adset:'[LOJA360][Alcance][IG][Grande SP] Casaco \u2014 Inverno',format:'REELS',spend:148.25,imp:103603,reach:102056,clicks:49,linkClicks:0,revenue:0},
-{id:'ad-depoimento',name:'[LOJA360][Convers\u00f5es][IG] Depoimento \u2014 Cliente real',campaign:'[LOJA360][Convers\u00f5es][IG] Depoimento \u2014 Cliente (\u2026)',adset:'[LOJA360][Convers\u00f5es][IG][Remarketing 30d] Depoimento',format:'FEED',spend:1290.55,imp:85200,reach:41300,clicks:1152,linkClicks:874,revenue:8420},
-{id:'ad-bastidores',name:'[LOJA360][Tr\u00e1fego][IG] Reels \u2014 Bastidores da produ\u00e7\u00e3o',campaign:'[LOJA360][Tr\u00e1fego][IG] Reels \u2014 Bastidores (\u2026)',adset:'[LOJA360][Tr\u00e1fego][IG][Interesses] Moda sustent\u00e1vel',format:'REELS',spend:980.30,imp:176800,reach:112600,clicks:1607,linkClicks:1490,revenue:0},
-{id:'ad-institucional',name:'[LOJA360][Marca][IG] V\u00eddeo institucional 30s',campaign:'[LOJA360][Marca][IG] V\u00eddeo institucional (\u2026)',adset:'[LOJA360][Marca][IG][Amplo 18-54 BR] Institucional',format:'STORIES',spend:1980,imp:602400,reach:418200,clicks:943,linkClicks:611,revenue:0},
-{id:'ad-teaser',name:'[LOJA360][Engajamento][IG] Reels \u2014 Teaser do lan\u00e7amento',campaign:'[LOJA360][Engajamento][IG] Teaser \u2014 Lan\u00e7amento (\u2026)',adset:'[LOJA360][Engajamento][IG][Envolvidos] Teaser',format:'REELS',spend:720.15,imp:110700,reach:58900,clicks:1000,linkClicks:702,revenue:0},
-{id:'ad-oferta20',name:'[LOJA360][Convers\u00f5es][IG] Est\u00e1tico \u2014 Oferta 20% OFF',campaign:'[LOJA360][Convers\u00f5es][IG] Oferta 20% (\u2026)',adset:'[LOJA360][Convers\u00f5es][IG][Remarketing 7d] Oferta',format:'FEED',spend:640.80,imp:98700,reach:52300,clicks:1420,linkClicks:1180,revenue:5210},
-{id:'ad-lookbook',name:'[LOJA360][Tr\u00e1fego][IG] Carrossel \u2014 Lookbook 4 pe\u00e7as',campaign:'[LOJA360][Tr\u00e1fego][IG] Lookbook (\u2026)',adset:'[LOJA360][Tr\u00e1fego][IG][Lookalike 2%] Lookbook',format:'FEED',spend:512.40,imp:87200,reach:61800,clicks:890,linkClicks:764,revenue:0},
-{id:'ad-stories-flash',name:'[LOJA360][Convers\u00f5es][IG] Stories \u2014 Flash sale 24h',campaign:'[LOJA360][Convers\u00f5es][IG] Flash sale (\u2026)',adset:'[LOJA360][Convers\u00f5es][IG][Envolvidos 14d] Flash',format:'STORIES',spend:389.90,imp:64500,reach:48200,clicks:720,linkClicks:655,revenue:3140},
-{id:'ad-unboxing',name:'[LOJA360][Engajamento][IG] Reels \u2014 Unboxing influencer',campaign:'[LOJA360][Engajamento][IG] Unboxing (\u2026)',adset:'[LOJA360][Engajamento][IG][Seguidores] Unboxing',format:'REELS',spend:298.60,imp:142300,reach:97400,clicks:1810,linkClicks:340,revenue:0}
-].sort((a,b)=>b.spend-a.spend);
-const camps=[
-{name:'Convers\u00f5es \u2014 Cole\u00e7\u00e3o Inverno',obj:'Vendas',spend:5840.32,imp:412300,reach:198450,adsets:[
- {name:'P\u00fablico frio \u2014 Lookalike 1%',spend:3210.10,imp:228400,reach:112300,creatives:[{name:'V\u00eddeo 15s \u2014 Casaco',imp:141200,cpc:1.42},{name:'Carrossel \u2014 4 looks',imp:87200,cpc:1.68}]},
- {name:'Remarketing 30 dias',spend:2630.22,imp:183900,reach:86150,creatives:[{name:'Est\u00e1tico \u2014 Oferta 20%',imp:98700,cpc:.94},{name:'V\u00eddeo depoimento',imp:85200,cpc:1.12}]}]},
-{name:'Tr\u00e1fego \u2014 Blog e conte\u00fado',obj:'Tr\u00e1fego',spend:2310.75,imp:389100,reach:241800,adsets:[
- {name:'Interesses \u2014 Moda sustent\u00e1vel',spend:2310.75,imp:389100,reach:241800,creatives:[{name:'Est\u00e1tico \u2014 Guia de estilo',imp:212300,cpc:.58},{name:'Reels \u2014 Bastidores',imp:176800,cpc:.61}]}]},
-{name:'Reconhecimento \u2014 Marca',obj:'Alcance',spend:1980,imp:602400,reach:418200,adsets:[
- {name:'Amplo 18-54 BR',spend:1980,imp:602400,reach:418200,creatives:[{name:'V\u00eddeo institucional 30s',imp:602400,cpc:2.10}]}]},
-{name:'Engajamento \u2014 Lan\u00e7amento',obj:'Engajamento',spend:1265.40,imp:184500,reach:96300,adsets:[
- {name:'Seguidores + envolvidos',spend:1265.40,imp:184500,reach:96300,creatives:[{name:'Reels \u2014 Teaser lan\u00e7amento',imp:110700,cpc:.72},{name:'Est\u00e1tico \u2014 Contagem regressiva',imp:73800,cpc:.88}]}]}
-];
+let ads=[],camps=[],daily=[],totalClicks=0,period=null,loadError=null,loading=true;
 const brl=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const int=v=>v.toLocaleString('pt-BR');
 const pct=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
 const dec=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const kmil=v=>v>=1000?(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil':String(v);
-let filter='Todos',account=localStorage.getItem('ma-account')||'Elvis';
+const ACCOUNTS=['Gov360','Wesley'];
+const ACCOUNT_KEY={'Gov360':'gov360','Wesley':'wesley'};
+const stored=localStorage.getItem('ma-account');
+let filter='Todos',account=ACCOUNTS.includes(stored)?stored:'Gov360';
 const off={},open={};
 const imgs=JSON.parse(localStorage.getItem('ma-imgs')||'{}');
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 /* mobile */
 function kpis(){
   const ts=ads.reduce((s,a)=>s+a.spend,0),ti=ads.reduce((s,a)=>s+a.imp,0),tr=ads.reduce((s,a)=>s+a.reach,0);
-  document.getElementById('kpis').innerHTML=[['Gasto',brl(ts).replace(',00','')],['Impress.',kmil(ti)],['Alcance',kmil(tr)],['CPM',brl(ts/ti*1000)]]
+  document.getElementById('kpis').innerHTML=[['Gasto',brl(ts).replace(',00','')],['Impress.',kmil(ti)],['Alcance',kmil(tr)],['CPM',ti?brl(ts/ti*1000):'—']]
     .map(k=>`<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('');
 }
 function chips(){
@@ -220,6 +202,10 @@ function chips(){
 function cards(){
   const shown=ads.filter(a=>filter==='Todos'||a.format===filter);
   document.getElementById('count').textContent=shown.length;
+  if(!shown.length){
+    document.getElementById('rail').innerHTML=`<div style="padding:24px 20px;color:#7c828a;font-size:14px">${loading?'Carregando anúncios…':loadError?'Não foi possível carregar os anúncios.':'Nenhum anúncio com veiculação no período.'}</div>`;
+    return;
+  }
   document.getElementById('rail').innerHTML=shown.map((a,i)=>{
     const cpr=a.linkClicks>0?a.spend/a.linkClicks:0;
     const m=[['Gasto',brl(a.spend)],['Impress\u00f5es',int(a.imp)],['Alcance',int(a.reach)],['Frequ\u00eancia',dec(a.imp/a.reach)],['Cliques',int(a.clicks)],['Cliques no Link',int(a.linkClicks)],['CPM',brl(a.spend/a.imp*1000)],['CPC',a.clicks?brl(a.spend/a.clicks):brl(0)],['CPC Link',a.linkClicks?brl(a.spend/a.linkClicks):brl(0)],['CTR',pct(a.clicks/a.imp*100)],['CTR Link',pct(a.linkClicks/a.imp*100)],['CPR',brl(cpr)],['Receita',brl(a.revenue)],['ROAS',dec(a.spend?a.revenue/a.spend:0)+'x']];
@@ -236,29 +222,31 @@ function cards(){
   }).join('');
 }
 function menu(){
-  document.getElementById('menu').innerHTML=['Elvis','Wesley'].map(n=>`<div class="mi${n===account?' sel':''}" data-acc="${n}"><div class="av">${n[0]}</div><span>${n}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>`).join('');
+  document.getElementById('menu').innerHTML=ACCOUNTS.map(n=>`<div class="mi${n===account?' sel':''}" data-acc="${n}"><div class="av">${n[0]}</div><span>${n}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>`).join('');
   document.getElementById('acctName').textContent=account;
   document.getElementById('acctAv').textContent=account[0];
   document.getElementById('dAcct').textContent=account;
 }
 /* desktop */
 function dkpis(){
-  const ts=camps.reduce((s,c)=>s+c.spend,0),ti=camps.reduce((s,c)=>s+c.imp,0),tr=camps.reduce((s,c)=>s+c.reach,0),clicks=8942;
+  const ts=camps.reduce((s,c)=>s+c.spend,0),ti=camps.reduce((s,c)=>s+c.imp,0),tr=camps.reduce((s,c)=>s+c.reach,0),clicks=totalClicks;
   document.getElementById('dkpis').innerHTML=[
     ['Investimento',brl(ts),'total no per\u00edodo'],
-    ['Impress\u00f5es',int(ti),'freq. m\u00e9dia 2,1'],
+    ['Impress\u00f5es',int(ti),'freq. m\u00e9dia '+(tr?dec(ti/tr):'—')],
     ['Alcance',int(tr),'pessoas \u00fanicas'],
-    ['CPC / CPM',brl(ts/clicks)+' / '+brl(ts/ti*1000),int(clicks)+' cliques']
+    ['CPC / CPM',(clicks?brl(ts/clicks):'—')+' / '+(ti?brl(ts/ti*1000):'—'),int(clicks)+' cliques']
   ].map(k=>`<div class="dkpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
 }
 function chart(){
-  const seed=[310,342,298,371,405,388,352,341,367,392,418,376,349,362,401,435,412,388,357,371,396,428,447,419,383,364,392,417,441,406,372];
-  const max=Math.max(...seed),W=760,H=220,bw=W/31;
+  const el=document.getElementById('chart');
+  if(!daily.length){el.innerHTML='';return}
+  const vals=daily.map(d=>d.spend),max=Math.max(...vals)||1,W=760,H=220,bw=W/daily.length,peak=vals.indexOf(Math.max(...vals));
   let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;display:block">`;
-  seed.forEach((v,i)=>{s+=`<rect x="${(i*bw+2).toFixed(1)}" y="${(H-28-(v/max)*(H-48)).toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${((v/max)*(H-48)).toFixed(1)}" rx="3" fill="${i===22?'#0052ff':'#dee1e6'}"/>`});
-  [0,6,13,20,27,30].forEach(i=>{s+=`<text x="${(i*bw+bw/2).toFixed(1)}" y="${H-8}" fill="#7c828a" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">${i+1}/07</text>`});
-  s+=`<text x="${(22*bw+bw/2).toFixed(1)}" y="${(H-32-(seed[22]/max)*(H-48)-8).toFixed(1)}" fill="#0052ff" font-size="12" font-weight="700" text-anchor="middle" font-family="Inter,sans-serif">R$ 447</text></svg>`;
-  document.getElementById('chart').innerHTML=s;
+  vals.forEach((v,i)=>{s+=`<rect x="${(i*bw+2).toFixed(1)}" y="${(H-28-(v/max)*(H-48)).toFixed(1)}" width="${Math.max(bw-4,1).toFixed(1)}" height="${((v/max)*(H-48)).toFixed(1)}" rx="3" fill="${i===peak?'#0052ff':'#dee1e6'}"/>`});
+  const step=Math.max(1,Math.ceil(daily.length/6));
+  daily.forEach((d,i)=>{if(i%step&&i!==daily.length-1)return;const t=d.date.split('-');s+=`<text x="${(i*bw+bw/2).toFixed(1)}" y="${H-8}" fill="#7c828a" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">${t[2]}/${t[1]}</text>`});
+  s+=`<text x="${(peak*bw+bw/2).toFixed(1)}" y="${(H-32-(H-48)-8).toFixed(1)}" fill="#0052ff" font-size="12" font-weight="700" text-anchor="middle" font-family="Inter,sans-serif">${brl(max).replace(',00','')}</text></svg>`;
+  el.innerHTML=s;
 }
 function shares(){
   const ts=camps.reduce((s,c)=>s+c.spend,0);
@@ -279,6 +267,31 @@ function table(){
     return h;
   }).join('');
 }
+function fmtRange(r){if(!r)return '—';const d=v=>{const t=v.split('-');return t[2]+'/'+t[1]};return d(r.since)+' – '+d(r.until)}
+function chrome(){
+  const range=loading?'…':loadError?'—':fmtRange(period);
+  document.getElementById('mPeriod').textContent=range;
+  document.getElementById('dPeriod').textContent=loading?'carregando…':loadError?'—':fmtRange(period)+' de '+(period?period.since.split('-')[0]:'');
+  document.getElementById('dActive').textContent=loading?'…':loadError?'—':'Campanhas ativas: '+camps.length;
+  const note=loading?'Carregando dados da conta '+account+'…'
+    :loadError?'Não foi possível carregar: '+loadError
+    :'Dados reais da conta '+account+' · Meta Ads';
+  document.getElementById('mFoot').textContent=loading||loadError?note:note+' · arraste imagens dos criativos para os cards';
+  document.getElementById('dNote').textContent=note;
+  document.getElementById('dStamp').textContent=loading||loadError?'':'Atualizado em '+new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
+}
+function render(){kpis();chips();cards();menu();dkpis();chart();shares();table();chrome()}
+async function load(){
+  loading=true;loadError=null;ads=[];camps=[];daily=[];totalClicks=0;period=null;
+  render();
+  try{
+    const r=await fetch('/api/insights?account='+ACCOUNT_KEY[account]);
+    const j=await r.json().catch(()=>({error:'resposta inválida do servidor'}));
+    if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
+    ads=j.ads||[];camps=j.camps||[];daily=j.daily||[];totalClicks=j.clicks||0;period=j.period||null;
+  }catch(e){loadError=e.message||'falha de rede'}
+  loading=false;render();
+}
 /* events */
 document.addEventListener('click',e=>{
   const chip=e.target.closest('.chip');
@@ -287,7 +300,7 @@ document.addEventListener('click',e=>{
   if(sw){const id=sw.dataset.sw;off[id]=!off[id];sw.classList.toggle('off',!!off[id]);return}
   if(e.target.closest('#acctBtn')){document.getElementById('menu').classList.toggle('open');return}
   const mi=e.target.closest('.mi');
-  if(mi){account=mi.dataset.acc;localStorage.setItem('ma-account',account);menu();document.getElementById('menu').classList.remove('open');return}
+  if(mi){account=mi.dataset.acc;localStorage.setItem('ma-account',account);document.getElementById('menu').classList.remove('open');load();return}
   if(!e.target.closest('#menu'))document.getElementById('menu').classList.remove('open');
   const tr=e.target.closest('.trow:not(.hd)');
   if(tr){const i=tr.dataset.c;open[i]=!open[i];table();return}
@@ -305,7 +318,7 @@ function ingest(file,id){
 document.addEventListener('dragover',e=>{const m=e.target.closest&&e.target.closest('.media');if(m){e.preventDefault();m.classList.add('over')}});
 document.addEventListener('dragleave',e=>{const m=e.target.closest&&e.target.closest('.media');if(m)m.classList.remove('over')});
 document.addEventListener('drop',e=>{const m=e.target.closest&&e.target.closest('.media');if(m){e.preventDefault();m.classList.remove('over');const f=e.dataTransfer.files[0];if(f)ingest(f,m.dataset.id)}});
-kpis();chips();cards();menu();dkpis();chart();shares();table();
+load();
 </script>
 </body>
 </html>

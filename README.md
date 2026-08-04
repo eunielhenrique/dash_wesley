@@ -22,9 +22,38 @@ sans-serif do sistema e continua funcionando.
 
 ## Dados
 
-Os números são os dados de exemplo do design, nos arrays `ads` e `camps` no
-`<script>` no fim do `index.html`. Para valores reais, substitua os dois por um
-export do Gerenciador de Anúncios.
+Os números vêm do Meta Ads em tempo real. A página chama `/api/insights`, uma
+Vercel Function que consulta a Graph API v20 e devolve os dados já no formato
+que a tela usa. **O token nunca chega ao navegador** — a página estática só
+enxerga os números agregados.
+
+Contas disponíveis no seletor: **Gov360** e **Wesley**. Trocar de conta refaz a
+chamada. A janela padrão é de 30 dias (`/api/insights?account=gov360&days=30`).
+
+### Variáveis de ambiente
+
+Configure em Project Settings → Environment Variables, na Vercel:
+
+| Variável | Valor |
+|---|---|
+| `META_ACCESS_TOKEN` | token com permissão `ads_read` nas duas contas |
+| `META_AD_ACCOUNT_GOV360` | `act_XXXXXXXXXXXXXXX` da conta Gov360 |
+| `META_AD_ACCOUNT_WESLEY` | `act_XXXXXXXXXXXXXXX` da conta do Wesley |
+
+Faltando qualquer uma, a API responde 503 e a página mostra o motivo — nunca
+cai para número inventado.
+
+## Testes
+
+```bash
+npm install
+npm test
+```
+
+`test/insights.test.mjs` cobre a transformação da Graph API com `fetch` stubado
+(conversão de tipos, receita, posicionamento, alcance por nível, erros).
+`test/render.test.mjs` monta a página em jsdom e confere o que aparece na tela,
+inclusive o estado de falha. Rodam sem rede e sem credencial.
 
 ## design-source/
 
