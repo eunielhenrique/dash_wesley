@@ -225,7 +225,9 @@ export default async function handler(req, res) {
     const activeAdsets = setEnt.filter(isOn).length;
     const activeAds = adEnt.filter(isOn).length;
 
-    res.setHeader('Cache-Control', 'private, max-age=0, s-maxage=300, stale-while-revalidate=600');
+    // 60s: a dash é usada para conferir mudança recém-feita no Gerenciador;
+    // cache longo faria a ativação de uma campanha demorar a aparecer.
+    res.setHeader('Cache-Control', 'private, max-age=0, s-maxage=60, stale-while-revalidate=120');
     return res.status(200).json({
       account: account.label,
       period: range,
