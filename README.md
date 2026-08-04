@@ -30,6 +30,20 @@ enxerga os números agregados.
 Contas disponíveis no seletor: **Gov360** e **Wesley**. Trocar de conta refaz a
 chamada. A janela padrão é de 30 dias (`/api/insights?account=gov360&days=30`).
 
+### Veiculando agora ≠ entrega no período
+
+São recortes diferentes e a tela mostra os dois separados:
+
+- **"Veiculando agora: N"** (selo do cabeçalho) vem do `effective_status` da edge
+  `/campaigns` — campanhas ligadas neste momento, inclusive as que ainda não
+  gastaram nada.
+- **Tabela de campanhas** lista quem teve entrega na janela, que é o que os
+  insights enxergam. Campanha pausada depois de rodar aparece aqui, marcada
+  com o selo *Pausada*.
+
+Usar a contagem de linhas da tabela como "campanhas ativas" seria errado nos dois
+sentidos: conta pausadas e ignora ativas sem gasto.
+
 ### Variáveis de ambiente
 
 Configure em Project Settings → Environment Variables, na Vercel:

@@ -168,7 +168,7 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
       </div>
     </div>
     <div class="tablecard">
-      <div class="thead2"><b>Campanhas</b><small>Clique para ver conjuntos e anúncios</small></div>
+      <div class="thead2"><b>Campanhas</b><small>Com entrega no período · clique para ver conjuntos e anúncios</small></div>
       <div class="trow hd"><div></div><div>Campanha</div><div class="num">Investimento</div><div class="num">Impressões</div><div class="num">Alcance</div><div class="num">CPC</div><div class="num">CPM</div></div>
       <div id="tbody"></div>
     </div>
@@ -176,7 +176,7 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
   </main>
 </div>
 <script>
-let ads=[],camps=[],daily=[],totalClicks=0,period=null,loadError=null,loading=true;
+let ads=[],camps=[],daily=[],totalClicks=0,activeCount=0,period=null,loadError=null,loading=true;
 const brl=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const int=v=>v.toLocaleString('pt-BR');
 const pct=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
@@ -256,7 +256,7 @@ function table(){
   const dots=['#0052ff','#05b169','#f4b000','#cf202f'];
   document.getElementById('tbody').innerHTML=camps.map((c,i)=>{
     let h=`<div class="trow" data-c="${i}"><div class="chev">${open[i]?'\u25bc':'\u25b6'}</div>
-      <div class="cname"><span class="dot" style="background:${dots[i%4]}"></span><span style="font-weight:600">${c.name}</span><span class="obj">${c.obj}</span></div>
+      <div class="cname"><span class="dot" style="background:${dots[i%4]}"></span><span style="font-weight:600">${c.name}</span><span class="obj">${c.obj}</span>${c.active===false?'<span class="obj" style="background:#fde8ea;color:#cf202f">Pausada</span>':''}</div>
       <div class="num b">${brl(c.spend)}</div><div class="num">${int(c.imp)}</div><div class="num">${int(c.reach)}</div><div class="num">${brl(c.spend/(c.imp*.021))}</div><div class="num">${brl(c.spend/c.imp*1000)}</div></div>`;
     if(open[i]){
       h+=`<div class="sub2">`+c.adsets.map(a=>`<div style="margin-top:12px">
@@ -272,7 +272,7 @@ function chrome(){
   const range=loading?'…':loadError?'—':fmtRange(period);
   document.getElementById('mPeriod').textContent=range;
   document.getElementById('dPeriod').textContent=loading?'carregando…':loadError?'—':fmtRange(period)+' de '+(period?period.since.split('-')[0]:'');
-  document.getElementById('dActive').textContent=loading?'…':loadError?'—':'Campanhas ativas: '+camps.length;
+  document.getElementById('dActive').textContent=loading?'…':loadError?'—':'Veiculando agora: '+activeCount;
   const note=loading?'Carregando dados da conta '+account+'…'
     :loadError?'Não foi possível carregar: '+loadError
     :'Dados reais da conta '+account+' · Meta Ads';
@@ -282,13 +282,13 @@ function chrome(){
 }
 function render(){kpis();chips();cards();menu();dkpis();chart();shares();table();chrome()}
 async function load(){
-  loading=true;loadError=null;ads=[];camps=[];daily=[];totalClicks=0;period=null;
+  loading=true;loadError=null;ads=[];camps=[];daily=[];totalClicks=0;activeCount=0;period=null;
   render();
   try{
     const r=await fetch('/api/insights?account='+ACCOUNT_KEY[account]);
     const j=await r.json().catch(()=>({error:'resposta inválida do servidor'}));
     if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
-    ads=j.ads||[];camps=j.camps||[];daily=j.daily||[];totalClicks=j.clicks||0;period=j.period||null;
+    ads=j.ads||[];camps=j.camps||[];daily=j.daily||[];totalClicks=j.clicks||0;activeCount=j.activeCount||0;period=j.period||null;
   }catch(e){loadError=e.message||'falha de rede'}
   loading=false;render();
 }

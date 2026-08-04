@@ -98,7 +98,7 @@ export default async function handler(req, res) {
   const act = `/${actId}`;
 
   try {
-    const [adRows, adsetRows, campRows, dailyRows, placementRows] = await Promise.all([
+    const [adRows, adsetRows, campRows, dailyRows, placementRows, statusRows] = await Promise.all([
       graph(`${act}/insights`, {
         ...base,
         fields: 'ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,impressions,reach,clicks,inline_link_clicks,action_values',
@@ -117,7 +117,13 @@ export default async function handler(req, res) {
       graph(`${act}/insights`, {
         ...base, breakdowns: 'publisher_platform,platform_position', fields: 'ad_id,impressions',
       }, token),
+      graph(`${act}/campaigns`, { fields: 'id,effective_status', limit: '500' }, token),
     ]);
+
+    // "Veicular agora" e "ter tido entrega no período" são coisas diferentes: uma
+    // campanha pausada ontem aparece nos insights, e uma ativa sem gasto não aparece.
+    const statusById = {};
+    for (const c of statusRows) statusById[c.id] = c.effective_status;
 
     // Um anúncio roda em vários posicionamentos; o trilho usa o de maior volume.
     const bestPlacement = {};
@@ -166,6 +172,8 @@ export default async function handler(req, res) {
     const camps = campRows
       .map((r) => ({
         name: r.campaign_name,
+        status: statusById[r.campaign_id] || 'UNKNOWN',
+        active: statusById[r.campaign_id] === 'ACTIVE',
         obj: OBJECTIVES[r.objective] || r.objective || '—',
         spend: num(r.spend),
         imp: num(r.impressions),
@@ -179,12 +187,14 @@ export default async function handler(req, res) {
       .sort((a, b) => a.date.localeCompare(b.date));
 
     const clicks = ads.reduce((s, a) => s + a.clicks, 0);
+    const activeCount = Object.values(statusById).filter((v) => v === 'ACTIVE').length;
 
     res.setHeader('Cache-Control', 'private, max-age=0, s-maxage=300, stale-while-revalidate=600');
     return res.status(200).json({
       account: account.label,
       period: range,
       clicks,
+      activeCount,
       ads,
       camps,
       daily,

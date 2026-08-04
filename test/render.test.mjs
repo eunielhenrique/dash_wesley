@@ -31,7 +31,10 @@ check('linhas de campanha', d.querySelectorAll('.trow:not(.hd)').length===4, d.q
 check('barras do gráfico = dias da série', d.querySelectorAll('#chart rect').length===stub.daily.length, d.querySelectorAll('#chart rect').length);
 check('período real no cabeçalho mobile', d.getElementById('mPeriod').textContent==='06/07 – 04/08', d.getElementById('mPeriod').textContent);
 check('período real no cabeçalho desktop', /06\/07 – 04\/08 de 2026/.test(d.getElementById('dPeriod').textContent), d.getElementById('dPeriod').textContent);
-check('selo de campanhas ativas real', d.getElementById('dActive').textContent==='Campanhas ativas: 4', d.getElementById('dActive').textContent);
+check('selo mostra veiculando agora, vindo do activeCount', d.getElementById('dActive').textContent==='Veiculando agora: 2', d.getElementById('dActive').textContent);
+check('selo não repete a contagem de linhas da tabela', d.getElementById('dActive').textContent!=='Veiculando agora: 4', d.getElementById('dActive').textContent);
+check('campanha pausada marcada na tabela', [...d.querySelectorAll('.trow .obj')].filter(e=>e.textContent==='Pausada').length===2, [...d.querySelectorAll('.trow .obj')].map(e=>e.textContent).join(','));
+check('tabela avisa que o recorte é entrega no período', /Com entrega no período/.test(d.querySelector('.thead2 small').textContent), d.querySelector('.thead2 small').textContent);
 check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta Gov360/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('contas do menu = Gov360 e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Gov360/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
 check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Gov360', d.getElementById('acctName').textContent);

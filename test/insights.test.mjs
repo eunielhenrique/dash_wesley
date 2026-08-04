@@ -6,6 +6,13 @@ const GRAPH = {
 };
 globalThis.fetch = async (u) => {
   const url = new URL(u);
+  if (url.pathname.endsWith('/campaigns')) {
+    // c1 teve entrega mas está pausada; c2 está ativa e ainda sem gasto.
+    return { ok:true, status:200, json: async () => ({ data:[
+      {id:'c1',effective_status:'PAUSED'},
+      {id:'c2',effective_status:'ACTIVE'},
+    ]}) };
+  }
   const lvl = url.searchParams.get('level');
   const brk = url.searchParams.get('breakdowns');
   const inc = url.searchParams.get('time_increment');
@@ -73,6 +80,10 @@ check('cpc calculado', Math.abs(b.camps[0].adsets[0].creatives[0].cpc-6)<0.001, 
 check('cliques totais somados', b.clicks===60, b.clicks);
 check('série diária ordenada', b.daily.length===2 && b.daily[0].spend===100.5, JSON.stringify(b.daily));
 check('período devolvido', !!(b.period.since && b.period.until), JSON.stringify(b.period));
+check('estado real da campanha vem da edge /campaigns', b.camps[0].status==='PAUSED', b.camps[0].status);
+check('campanha com entrega mas pausada não conta como ativa', b.camps[0].active===false, b.camps[0].active);
+check('veiculando agora conta campanha ativa SEM entrega no período', b.activeCount===1, b.activeCount);
+check('campanha ativa sem entrega fica fora da tabela (conjuntos distintos)', !b.camps.some(c=>c.status==='ACTIVE'), b.camps.map(c=>c.status).join(','));
 check('token não vaza na resposta', !JSON.stringify(b).includes('access_token'), 'vazou');
 
 console.log('\n[4] erro da Graph API');
