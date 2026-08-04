@@ -27,6 +27,8 @@ let d = await boot();
 const txt = d.body.textContent;
 check('KPIs do desktop renderizados', d.querySelectorAll('.dkpi').length===4, d.querySelectorAll('.dkpi').length);
 check('cards do mobile renderizados', d.querySelectorAll('.card').length===6, d.querySelectorAll('.card').length);
+check('filtros de posicionamento removidos', !d.getElementById('chips') && d.querySelectorAll('.chip').length===0, 'ainda existem');
+check('sem filtro, o trilho lista todos os anúncios', d.querySelectorAll('.card').length===6, d.querySelectorAll('.card').length);
 check('linhas de campanha', d.querySelectorAll('.trow:not(.hd)').length===4, d.querySelectorAll('.trow:not(.hd)').length);
 check('barras do gráfico = dias da série', d.querySelectorAll('#chart rect').length===stub.daily.length, d.querySelectorAll('#chart rect').length);
 check('cabeçalho mobile não tem mais pílula de data', !d.getElementById('mPeriod'), 'ainda existe');

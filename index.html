@@ -38,9 +38,6 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
 .kpi{background:#fff;border:1px solid #dee1e6;border-radius:16px;padding:10px 10px 9px}
 .kpi .l{font-size:10px;color:#7c828a;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .kpi .v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:13px;white-space:nowrap;margin-top:2px}
-.chips{display:flex;gap:8px;padding:14px 20px 4px;overflow-x:auto}
-.chip{border:none;background:#eef0f3;color:#0a0b0d;border-radius:100px;padding:9px 16px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap;cursor:pointer}
-.chip.on{background:#0052ff;color:#fff}
 .app main{flex:1;padding:14px 0 32px;display:flex;flex-direction:column;gap:16px}
 .mhead{display:flex;align-items:baseline;justify-content:space-between;padding:0 20px}
 .mhead b{font-weight:600;font-size:18px;letter-spacing:-.2px}
@@ -140,7 +137,6 @@ img.cr-x,.cr img.thumb{object-fit:cover;display:block}
   <div class="menu" id="menu"></div>
   <div class="kpis" id="kpis"></div>
 </header>
-<div class="chips" id="chips"></div>
 <main>
   <div class="mhead"><b>Anúncios patrocinados</b><small><span id="count"></span> anúncios · deslize →</small></div>
   <div class="rail" id="rail"></div>
@@ -192,7 +188,7 @@ const kmil=v=>v>=1000?(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})
 const ACCOUNTS=['Elvis','Wesley'];
 const ACCOUNT_KEY={'Elvis':'elvis','Wesley':'wesley'};
 const stored=localStorage.getItem('ma-account');
-let filter='Todos',account=ACCOUNTS.includes(stored)?stored:'Elvis';
+let account=ACCOUNTS.includes(stored)?stored:'Elvis';
 const open={};
 const imgs=JSON.parse(localStorage.getItem('ma-imgs')||'{}');
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
@@ -204,12 +200,8 @@ function kpis(){
   document.getElementById('kpis').innerHTML=[['Gasto',brl(ts).replace(',00','')],['Impress.',kmil(ti)],['Alcance',kmil(tr)],['CPM',ti?brl(ts/ti*1000):'—']]
     .map(k=>`<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('');
 }
-function chips(){
-  document.getElementById('chips').innerHTML=['Todos','REELS','FEED','STORIES']
-    .map(f=>`<button class="chip${filter===f?' on':''}" data-f="${f}">${f==='Todos'?'Todos':f[0]+f.slice(1).toLowerCase()}</button>`).join('');
-}
 function cards(){
-  const shown=ads.filter(a=>filter==='Todos'||a.format===filter);
+  const shown=ads;
   document.getElementById('count').textContent=shown.length;
   if(!shown.length){
     document.getElementById('rail').innerHTML=`<div style="padding:24px 20px;color:#7c828a;font-size:14px">${loading?'Carregando anúncios…':loadError?'Não foi possível carregar os anúncios.':'Nenhum anúncio com veiculação no período.'}</div>`;
@@ -290,7 +282,7 @@ function chrome(){
   document.getElementById('dNote').textContent=note;
   document.getElementById('dStamp').textContent=loading||loadError?'':'Atualizado em '+new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
 }
-function render(){kpis();chips();cards();menu();dkpis();chart();shares();table();chrome()}
+function render(){kpis();cards();menu();dkpis();chart();shares();table();chrome()}
 let buscando=false;                       // requisição em voo (loading já nasce true p/ a tela)
 async function load(){
   if(buscando)return;                     // não empilha buscas
@@ -307,8 +299,6 @@ async function load(){
 /* events */
 document.addEventListener('click',e=>{
   if(e.target.closest('.rf')){load();return}
-  const chip=e.target.closest('.chip');
-  if(chip){filter=chip.dataset.f;chips();cards();return}
   if(e.target.closest('#acctBtn')){document.getElementById('menu').classList.toggle('open');return}
   const mi=e.target.closest('.mi');
   if(mi){account=mi.dataset.acc;localStorage.setItem('ma-account',account);document.getElementById('menu').classList.remove('open');load();return}
