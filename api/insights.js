@@ -124,7 +124,15 @@ async function creativeMedia(actId, token) {
     if (pageToken[v.pageId]) (byPage[v.pageId] ||= []).push(v);
   }
 
-  await Promise.all(Object.entries(byPage).map(async ([pageId, list]) => {
+  // A Graph limita quantos ids cabem numa leitura em lote; uma conta com 145
+  // anúncios estoura e o lote inteiro volta vazio. Daí os blocos de 50.
+  const CHUNK = 50;
+  const jobs = [];
+  for (const [pageId, list] of Object.entries(byPage)) {
+    for (let i = 0; i < list.length; i += CHUNK) jobs.push([pageId, list.slice(i, i + CHUNK)]);
+  }
+
+  await Promise.all(jobs.map(async ([pageId, list]) => {
     try {
       const url = new URL(`${API}/`);
       url.searchParams.set('ids', list.map((v) => v.videoId).join(','));
@@ -138,7 +146,7 @@ async function creativeMedia(actId, token) {
         if (found.source) media[v.adId].video = found.source;
         if (found.picture && !media[v.adId].thumb) media[v.adId].thumb = found.picture;
       }
-    } catch { /* um vídeo sem MP4 não pode derrubar a tela toda */ }
+    } catch { /* um bloco sem MP4 não pode derrubar a tela toda */ }
   }));
 
   return media;
