@@ -136,7 +136,7 @@ async function creativeMedia(actId, token) {
     try {
       const url = new URL(`${API}/`);
       url.searchParams.set('ids', list.map((v) => v.videoId).join(','));
-      url.searchParams.set('fields', 'source,picture');
+      url.searchParams.set('fields', 'source,picture,format,thumbnails{uri,width,height,is_preferred}');
       url.searchParams.set('access_token', pageToken[pageId]);
       const body = await (await fetch(url)).json();
       if (body.error) return;
@@ -144,7 +144,16 @@ async function creativeMedia(actId, token) {
         const found = body[v.videoId];
         if (!found) continue;
         if (found.source) media[v.adId].video = found.source;
-        if (found.picture && !media[v.adId].thumb) media[v.adId].thumb = found.picture;
+        // creative.thumbnail_url vem em ~1,6 KB e fica borrada como poster.
+        // Ordem: capa escolhida do vídeo (is_preferred, 1080x1920) > maior
+        // `format`, que é a mesma capa em 720x1280 > picture. As demais
+        // thumbnails são outros frames do vídeo, não a capa — não servem.
+        const bigger = (a, b) => ((b.width || 0) * (b.height || 0) > (a.width || 0) * (a.height || 0) ? b : a);
+        const cover = (found.thumbnails?.data || []).filter((t) => t.is_preferred && t.uri).reduce(
+          (acc, t) => (acc ? bigger(acc, t) : t), null);
+        const fmt = (found.format || []).filter((f) => f.picture).reduce(
+          (acc, f) => (acc ? bigger(acc, f) : f), null);
+        media[v.adId].thumb = cover?.uri || fmt?.picture || found.picture || media[v.adId].thumb;
       }
     } catch { /* um bloco sem MP4 não pode derrubar a tela toda */ }
   }));

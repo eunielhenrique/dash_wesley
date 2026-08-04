@@ -63,6 +63,13 @@ A ordem de exibição é: imagem que o usuário soltou no card > vídeo real >
 thumbnail real > placeholder de arrastar. Onde há vídeo, clicar toca em vez de
 abrir o seletor de arquivo.
 
+O poster **não** usa `creative.thumbnail_url`: ela vem com cerca de 1,6 KB e fica
+borrada em tela cheia. A ordem é: capa escolhida do vídeo (`thumbnails` com
+`is_preferred`, 1080x1920) > maior `format.picture`, que é a mesma capa em
+720x1280 > `picture`. As outras entradas de `thumbnails` são frames aleatórios
+do vídeo, não a capa, e por isso são ignoradas. Tudo vem na mesma leitura em
+lote, sem request extra.
+
 Se o token perder acesso às páginas, o MP4 some e o card cai na thumbnail; nada
 quebra.
 
@@ -121,6 +128,13 @@ página.
 A ordem de exibição é: imagem que o usuário soltou no card > vídeo real >
 thumbnail real > placeholder de arrastar. Onde há vídeo, clicar toca em vez de
 abrir o seletor de arquivo.
+
+O poster **não** usa `creative.thumbnail_url`: ela vem com cerca de 1,6 KB e fica
+borrada em tela cheia. A ordem é: capa escolhida do vídeo (`thumbnails` com
+`is_preferred`, 1080x1920) > maior `format.picture`, que é a mesma capa em
+720x1280 > `picture`. As outras entradas de `thumbnails` são frames aleatórios
+do vídeo, não a capa, e por isso são ignoradas. Tudo vem na mesma leitura em
+lote, sem request extra.
 
 Se o token perder acesso às páginas, o MP4 some e o card cai na thumbnail; nada
 quebra.
