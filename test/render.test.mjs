@@ -83,6 +83,7 @@ console.log('\n[A1] vídeos somados por cidade');
   const chipsTxt = [...vcards[0].querySelectorAll('.vchip')].map(e=>e.textContent).join(' | ');
   check('chips de líder por praça: gasto, alcance, impressões, cliques', /Maior gasto: Barueri/.test(chipsTxt) && /Maior alcance: Barueri/.test(chipsTxt) && /Mais impressões: Barueri/.test(chipsTxt) && /Mais cliques: Santana de Parnaíba/.test(chipsTxt), chipsTxt);
   check('maior CPM aponta a praça mais cara, em vermelho', vcards[0].querySelector('.vchip.hot')?.textContent==='Maior CPM: Santana de Parnaíba · R$ 5,45', vcards[0].querySelector('.vchip.hot')?.textContent);
+  check('chips fraquinhos listam as praças do vídeo', [...vcards[0].querySelectorAll('.vcity')].map(e=>e.textContent).join('/')==='Barueri/Santana de Parnaíba', [...vcards[0].querySelectorAll('.vcity')].map(e=>e.textContent).join('/'));
   check('copy não é mais cortada (sem line-clamp)', !/line-clamp/.test(html), 'clamp ainda no CSS');
   check('sem cidade elegível, card fica sem selo em vez de inventar', vcards[1].querySelectorAll('.vchip').length===0, vcards[1].querySelectorAll('.vchip').length);
   check('detalhe lista as cidades do vídeo', /Barueri/.test(vcards[0].querySelector('.vcities').textContent), vcards[0].querySelector('.vcities')?.textContent.slice(0,60));
