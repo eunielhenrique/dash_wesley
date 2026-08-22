@@ -42,7 +42,7 @@ check('selo não repete a contagem de linhas da tabela', d.getElementById('dActi
 check('campanha pausada marcada na tabela', [...d.querySelectorAll('.trow .obj')].filter(e=>e.textContent==='Pausada').length===2, [...d.querySelectorAll('.trow .obj')].map(e=>e.textContent).join(','));
 check('tabela avisa que o recorte é entrega no período', /Com entrega no período/.test(d.querySelector('.thead2 small').textContent), d.querySelector('.thead2 small').textContent);
 check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
-check('contas do menu = Elvis, Wesley e Wesley 2026', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Elvis/Wesley/Wesley 2026', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
+check('contas do menu = Elvis e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Elvis/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
 check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Elvis', d.getElementById('acctName').textContent);
 check('rodapé nomeia a conta certa', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('vídeo real renderizado nos cards que têm MP4', d.querySelectorAll('.media video.vid').length===4, d.querySelectorAll('.media video.vid').length);

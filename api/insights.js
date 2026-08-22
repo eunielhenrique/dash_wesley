@@ -11,12 +11,22 @@ const API = 'https://graph.facebook.com/v20.0';
 // ID de conta de anúncio não é credencial — sozinho não dá acesso a nada. Fica
 // aqui como padrão para que só o token precise ser configurado; a env var, se
 // existir, tem prioridade (troca de conta sem mexer no código).
+// `only` é o recorte pedido pelo dono: a dash mostra SÓ a campanha de
+// reconhecimento de cada um — e só o que está rodando. O resto da conta
+// (Tarcisio, Ratinho, campanhas pausadas) fica fora de TODA a tela.
 const ACCOUNTS = {
-  elvis: { label: 'Elvis', env: ['META_AD_ACCOUNT_ELVIS', 'META_AD_ACCOUNT_GOV360'], id: 'act_531444469411947' },
-  wesley: { label: 'Wesley', env: ['META_AD_ACCOUNT_WESLEY'], id: 'act_902191367681121' },
-  wesley2026: { label: 'Wesley 2026', env: ['META_AD_ACCOUNT_WESLEY_2026'], id: 'act_1225213654864267' },
+  elvis: {
+    label: 'Elvis', env: ['META_AD_ACCOUNT_ELVIS', 'META_AD_ACCOUNT_GOV360'], id: 'act_531444469411947',
+    only: /\[Reconhecimento\] Santana de Parna/i,
+  },
+  wesley: {
+    // A campanha do Wesley roda na conta CAMPANHA ELEITORAL 2026, não na antiga.
+    label: 'Wesley', env: ['META_AD_ACCOUNT_WESLEY'], id: 'act_1225213654864267',
+    only: /\[Reconhecimento\] Base Oeste/i,
+  },
 };
-ACCOUNTS.gov360 = ACCOUNTS.elvis;   // a conta Gov360 é a do Elvis; alias mantido
+ACCOUNTS.gov360 = ACCOUNTS.elvis;       // a conta Gov360 é a do Elvis; alias mantido
+ACCOUNTS.wesley2026 = ACCOUNTS.wesley;  // alias da URL antiga
 
 // Token embutido a pedido do dono das contas. META_ACCESS_TOKEN, se definida na
 // Vercel, tem prioridade e é o lugar certo para ele.
@@ -237,8 +247,10 @@ export default async function handler(req, res) {
       graph(`${act}/insights`, {
         ...base, level: 'campaign', fields: 'campaign_id,spend,impressions,reach',
       }, token),
+      // diário por campanha (não por conta): com o recorte `only`, o gasto das
+      // campanhas fora do filtro não pode contaminar o gráfico.
       graph(`${act}/insights`, {
-        ...base, level: 'account', time_increment: '1', fields: 'spend',
+        ...base, level: 'campaign', time_increment: '1', fields: 'campaign_id,spend',
       }, token),
       graph(`${act}/insights`, {
         ...base, breakdowns: 'publisher_platform,platform_position', fields: 'ad_id,impressions',
@@ -265,15 +277,19 @@ export default async function handler(req, res) {
     }
 
     const isOn = (e) => e.effective_status === 'ACTIVE';
-    // Entra na tela quem está no ar agora OU gastou na janela. Fica de fora só o
-    // que está pausado e sem entrega — ruído de campanha antiga.
-    const relevant = (e, ins) => isOn(e) || !!ins[e.id];
+    // Recorte da tela (pedido do dono): SÓ a campanha do filtro `only` e SÓ o
+    // que está rodando agora. Pausado — mesmo com entrega na janela — fica fora,
+    // em todos os níveis: campanha, conjunto e anúncio.
+    const campOk = campEnt.filter((c) => isOn(c) && (!account.only || account.only.test(c.name)));
+    const campIds = new Set(campOk.map((c) => c.id));
+    const setOk = setEnt.filter((s) => isOn(s) && campIds.has(s.campaign_id));
+    const setIds = new Set(setOk.map((s) => s.id));
+    const adOk = adEnt.filter((a) => isOn(a) && setIds.has(a.adset_id));
 
     const setById = byId(setEnt, 'id');
     const campById = byId(campEnt, 'id');
 
-    const ads = adEnt
-      .filter((a) => relevant(a, adIns))
+    const ads = adOk
       .map((a) => {
         const m = adIns[a.id] || {};
         return {
@@ -297,8 +313,7 @@ export default async function handler(req, res) {
 
     // Alcance não é somável (uma pessoa alcançada por dois anúncios conta uma vez),
     // por isso campanha e conjunto vêm dos seus próprios níveis, não de uma soma.
-    const camps = campEnt
-      .filter((c) => relevant(c, campIns))
+    const camps = campOk
       .map((c) => {
         const m = campIns[c.id] || {};
         return {
@@ -309,8 +324,8 @@ export default async function handler(req, res) {
           spend: num(m.spend),
           imp: num(m.impressions),
           reach: num(m.reach),
-          adsets: setEnt
-            .filter((s) => s.campaign_id === c.id && relevant(s, setIns))
+          adsets: setOk
+            .filter((s) => s.campaign_id === c.id)
             .map((s) => {
               const sm = setIns[s.id] || {};
               return {
@@ -319,8 +334,8 @@ export default async function handler(req, res) {
                 spend: num(sm.spend),
                 imp: num(sm.impressions),
                 reach: num(sm.reach),
-                creatives: adEnt
-                  .filter((a) => a.adset_id === s.id && relevant(a, adIns))
+                creatives: adOk
+                  .filter((a) => a.adset_id === s.id)
                   .map((a) => {
                     const am = adIns[a.id] || {};
                     return {
@@ -340,14 +355,20 @@ export default async function handler(req, res) {
       })
       .sort((a, b) => b.spend - a.spend || Number(b.active) - Number(a.active));
 
-    const daily = dailyRows
-      .map((r) => ({ date: r.date_start, spend: num(r.spend) }))
+    // Só os dias da campanha do recorte; dias com mais de uma linha somam.
+    const porDia = {};
+    for (const r of dailyRows) {
+      if (!campIds.has(r.campaign_id)) continue;
+      porDia[r.date_start] = (porDia[r.date_start] || 0) + num(r.spend);
+    }
+    const daily = Object.entries(porDia)
+      .map(([date, spend]) => ({ date, spend }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
     const clicks = ads.reduce((s, a) => s + a.clicks, 0);
-    const activeCount = campEnt.filter(isOn).length;
-    const activeAdsets = setEnt.filter(isOn).length;
-    const activeAds = adEnt.filter(isOn).length;
+    const activeCount = campOk.length;
+    const activeAdsets = setOk.length;
+    const activeAds = adOk.length;
 
     // Sempre fresco: a dash existe para conferir mudança recém-feita no
     // Gerenciador. (`private` já anulava o s-maxage que havia aqui — a CDN

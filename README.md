@@ -102,14 +102,30 @@ token embutido, e `META_AD_ACCOUNT_ELVIS` / `META_AD_ACCOUNT_WESLEY`
 sobrescrevem os IDs. É o caminho recomendado quando o token for trocado, porque
 variável de ambiente não vai para o Git.
 
-| Conta na dash | Conta de anúncio |
-|---|---|
-| **Elvis** | `act_531444469411947` (GOV360) |
-| **Wesley** | `act_902191367681121` (WESLEY CEZAR) |
-| **Wesley 2026** | `act_1225213654864267` (CAMPANHA ELEITORAL WESLEY CEZAR - 2026) |
+| Conta na dash | Conta de anúncio | Campanha exibida (`only`) |
+|---|---|---|
+| **Elvis** | `act_531444469411947` (GOV360) | `[ELVIS][Gestão 2026][Reconhecimento] Santana de Parnaíba — 5 praças` |
+| **Wesley** | `act_1225213654864267` (CAMPANHA ELEITORAL WESLEY CEZAR - 2026) | `[WESLEY][Eleitoral 2026][Reconhecimento] Base Oeste — 5 pracas` |
 
-O valor `gov360` segue aceito como alias de `elvis` na querystring, e
-`META_AD_ACCOUNT_WESLEY_2026` sobrescreve o ID da conta de 2026.
+Os valores `gov360` e `wesley2026` seguem aceitos como aliases na querystring.
+A antiga conta `act_902191367681121` saiu da dash — a campanha do Wesley roda
+na conta eleitoral de 2026.
+
+### Recorte da tela: só ativos, só a campanha de reconhecimento
+
+A pedido do dono, a dash mostra **apenas o que está rodando agora** e **apenas
+a campanha de reconhecimento** de cada conta (regex `only` em `ACCOUNTS`).
+O recorte vale para TODA a tela — KPIs, gráfico diário, cards, vídeos somados
+e tabela:
+
+- Campanha ativa fora do filtro (Tarcisio, Ratinho…) não aparece.
+- Campanha do filtro pausada não aparece, mesmo com entrega na janela.
+- Conjunto ou anúncio **pausado** dentro da campanha também sai (antes ficava
+  com o selo "· pausado" — agora o recorte é só o que veicula).
+- O caso histórico continua protegido: anúncio ativo que ainda não gastou
+  aparece **zerado**, nunca some.
+- O gráfico diário vem do nível **campanha** (não mais da conta), filtrado
+  pelas campanhas do recorte — o gasto do resto da conta não contamina a série.
 
 ### Vídeos somados por cidade
 

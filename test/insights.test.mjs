@@ -1,22 +1,25 @@
 import handler from '../api/insights.js';
 
-// Cenário: c1 pausada mas com entrega na janela; c2 ligada e ainda sem gastar.
-// a3 é o caso que motivou a mudança — anúncio no ar que os insights não enxergam.
+// Cenário do recorte da tela: só entra o que está ATIVO e dentro da campanha
+// do filtro `only`. c2 está ativa mas é outra campanha (fora); c3 casa com o
+// filtro mas está pausada — mesmo com entrega, fora. a3 segue sendo o caso
+// histórico: anúncio no ar que os insights não enxergam aparece zerado.
+const CAMP_ELVIS = '[ELVIS][Gestão 2026][Reconhecimento] Santana de Parnaíba — 5 praças';
 const CAMPAIGNS = [
-  { id: 'c1', name: 'Campanha 1', objective: 'OUTCOME_SALES', effective_status: 'PAUSED' },
-  { id: 'c2', name: 'Campanha 2', objective: 'OUTCOME_TRAFFIC', effective_status: 'ACTIVE' },
-  { id: 'c3', name: 'Campanha 3', objective: 'OUTCOME_SALES', effective_status: 'PAUSED' },
+  { id: 'c1', name: CAMP_ELVIS, objective: 'OUTCOME_AWARENESS', effective_status: 'ACTIVE' },
+  { id: 'c2', name: '[WESLEY][Alcance][Cajamar] Deputado do governador Tarcisio', objective: 'OUTCOME_TRAFFIC', effective_status: 'ACTIVE' },
+  { id: 'c3', name: '[ELVIS][Gestão 2026][Reconhecimento] Santana de Parnaíba — antiga', objective: 'OUTCOME_SALES', effective_status: 'PAUSED' },
 ];
 const ADSETS = [
-  { id: 's1', name: 'Conjunto 1', campaign_id: 'c1', effective_status: 'PAUSED' },
-  { id: 's2', name: 'Conjunto 2', campaign_id: 'c2', effective_status: 'ACTIVE' },
-  { id: 's3', name: 'Conjunto 3', campaign_id: 'c3', effective_status: 'PAUSED' },
+  { id: 's1', name: 'Conjunto 1', campaign_id: 'c1', effective_status: 'ACTIVE' },
+  { id: 's2', name: 'Conjunto 2', campaign_id: 'c1', effective_status: 'PAUSED' },
+  { id: 's3', name: 'Conjunto 3', campaign_id: 'c2', effective_status: 'ACTIVE' },
 ];
 const ADS = [
-  { id: 'a1', name: 'Anúncio A', adset_id: 's1', campaign_id: 'c1', effective_status: 'PAUSED' },
+  { id: 'a1', name: 'Anúncio A', adset_id: 's1', campaign_id: 'c1', effective_status: 'ACTIVE' },
   { id: 'a2', name: 'Anúncio B', adset_id: 's1', campaign_id: 'c1', effective_status: 'PAUSED' },
-  { id: 'a3', name: 'Anúncio C', adset_id: 's2', campaign_id: 'c2', effective_status: 'ACTIVE' },
-  { id: 'a4', name: 'Anúncio D', adset_id: 's3', campaign_id: 'c3', effective_status: 'PAUSED' },
+  { id: 'a3', name: 'Anúncio C', adset_id: 's1', campaign_id: 'c1', effective_status: 'ACTIVE' },
+  { id: 'a4', name: 'Anúncio D', adset_id: 's3', campaign_id: 'c2', effective_status: 'ACTIVE' },
 ];
 
 const ok = (data) => ({ ok: true, status: 200, json: async () => ({ data }) });
@@ -37,13 +40,15 @@ globalThis.fetch = async (u) => {
     { ad_id: 'a2', impressions: '500', platform_position: 'instagram_stories' },
   ]);
   if (inc) return ok([
-    { date_start: '2026-07-01', spend: '100.50' },
-    { date_start: '2026-07-02', spend: '250.25' },
+    { campaign_id: 'c1', date_start: '2026-07-01', spend: '100.50' },
+    { campaign_id: 'c1', date_start: '2026-07-02', spend: '250.25' },
+    { campaign_id: 'c2', date_start: '2026-07-02', spend: '999.00' },
   ]);
   if (lvl === 'ad') return ok([
     { ad_id: 'a1', spend: '300.00', impressions: '1000', reach: '800', clicks: '50',
       inline_link_clicks: '30', action_values: [{ action_type: 'omni_purchase', value: '1500.00' }] },
     { ad_id: 'a2', spend: '700.00', impressions: '500', reach: '450', clicks: '10', inline_link_clicks: '0' },
+    { ad_id: 'a4', spend: '100.00', impressions: '900', reach: '700', clicks: '5', inline_link_clicks: '2' },
   ]);
   if (lvl === 'adset') return ok([{ adset_id: 's1', spend: '1000.00', impressions: '1500', reach: '1100' }]);
   if (lvl === 'campaign') return ok([{ campaign_id: 'c1', spend: '1000.00', impressions: '1500', reach: '1100' }]);
@@ -75,43 +80,42 @@ r = await run(ENV, { account: 'joao' });
 check('conta desconhecida responde 400', r.code === 400, r.code);
 r = await run(ENV, { account: 'gov360' });
 check('alias gov360 aponta para a conta do Elvis', r.code === 200 && r.body.account === 'Elvis', r.body?.account);
+r = await run(ENV, { account: 'wesley2026' });
+check('alias wesley2026 aponta para a conta do Wesley', r.code === 200 && r.body.account === 'Wesley', r.body?.account);
 
-console.log('\n[2] hierarquia vem das entidades, não dos insights');
+console.log('\n[2] recorte: só ativos e só a campanha do filtro');
 r = await run(ENV, { account: 'elvis' });
 const b = r.body;
 const ad = (n) => b.ads.find((x) => x.name === n);
 const camp = (n) => b.camps.find((x) => x.name === n);
 check('200', r.code === 200, r.code);
-check('ANÚNCIO NO AR SEM ENTREGA APARECE', !!ad('Anúncio C'), b.ads.map((a) => a.name).join(','));
+check('só a campanha do filtro aparece', b.camps.length === 1 && !!camp(CAMP_ELVIS), b.camps.map((c) => c.name).join(','));
+check('campanha ATIVA fora do filtro fica fora (Tarcisio)', !b.camps.some((c) => /Tarcisio/.test(c.name)), 'entrou');
+check('campanha do filtro PAUSADA fica fora, mesmo com entrega', !b.camps.some((c) => /antiga/.test(c.name)), 'entrou');
+check('anúncio pausado fica fora, mesmo com entrega (B)', !ad('Anúncio B'), 'Anúncio B apareceu');
+check('anúncio de campanha fora do filtro fica fora (D)', !ad('Anúncio D'), 'Anúncio D apareceu');
+check('conjunto pausado fora da árvore', camp(CAMP_ELVIS).adsets.length === 1 && camp(CAMP_ELVIS).adsets[0].name === 'Conjunto 1', JSON.stringify(camp(CAMP_ELVIS).adsets.map((s) => s.name)));
+check('ANÚNCIO NO AR SEM ENTREGA APARECE (C)', !!ad('Anúncio C'), b.ads.map((a) => a.name).join(','));
 check('e aparece zerado, não com número inventado', ad('Anúncio C')?.spend === 0 && ad('Anúncio C')?.imp === 0, JSON.stringify(ad('Anúncio C')));
-check('marcado como ativo', ad('Anúncio C')?.active === true, ad('Anúncio C')?.active);
 check('sem entrega não tem posicionamento chutado', ad('Anúncio C')?.format === null, ad('Anúncio C')?.format);
-check('CAMPANHA NO AR SEM ENTREGA APARECE', !!camp('Campanha 2'), b.camps.map((c) => c.name).join(','));
-check('com o conjunto ativo dentro', camp('Campanha 2')?.adsets[0]?.name === 'Conjunto 2', JSON.stringify(camp('Campanha 2')?.adsets));
-check('e o anúncio ativo dentro do conjunto', camp('Campanha 2')?.adsets[0]?.creatives[0]?.name === 'Anúncio C', JSON.stringify(camp('Campanha 2')?.adsets[0]?.creatives));
-check('pausada COM entrega continua aparecendo', !!camp('Campanha 1'), 'sumiu');
-check('pausada SEM entrega fica fora (ruído)', !camp('Campanha 3'), 'Campanha 3 apareceu');
-check('anúncio de campanha pausada sem entrega fica fora', !ad('Anúncio D'), 'Anúncio D apareceu');
 
 console.log('\n[3] métricas e rótulos');
-check('spend convertido para número', ad('Anúncio B')?.spend === 700, ad('Anúncio B')?.spend);
+check('spend convertido para número', ad('Anúncio A')?.spend === 300, ad('Anúncio A')?.spend);
 check('receita lida de omni_purchase', ad('Anúncio A')?.revenue === 1500, ad('Anúncio A')?.revenue);
-check('sem receita vira 0, não NaN', ad('Anúncio B')?.revenue === 0, ad('Anúncio B')?.revenue);
+check('sem receita vira 0, não NaN', ad('Anúncio C')?.revenue === 0, ad('Anúncio C')?.revenue);
 check('posicionamento = o de maior impressão (A -> REELS)', ad('Anúncio A')?.format === 'REELS', ad('Anúncio A')?.format);
-check('stories mapeado (B -> STORIES)', ad('Anúncio B')?.format === 'STORIES', ad('Anúncio B')?.format);
-check('nome do conjunto e da campanha resolvidos no anúncio', ad('Anúncio A')?.adset === 'Conjunto 1' && ad('Anúncio A')?.campaign === 'Campanha 1', `${ad('Anúncio A')?.adset}/${ad('Anúncio A')?.campaign}`);
-check('objetivo traduzido', camp('Campanha 1')?.obj === 'Vendas', camp('Campanha 1')?.obj);
-check('alcance da campanha vem do nível campanha (1100, não 800+450)', camp('Campanha 1')?.reach === 1100, camp('Campanha 1')?.reach);
-check('cpc calculado', Math.abs(camp('Campanha 1').adsets[0].creatives[0].cpc - 6) < 0.001, camp('Campanha 1').adsets[0].creatives[0].cpc);
-check('cliques totais somados', b.clicks === 60, b.clicks);
-check('série diária ordenada', b.daily.length === 2 && b.daily[0].spend === 100.5, JSON.stringify(b.daily));
+check('nome do conjunto e da campanha resolvidos no anúncio', ad('Anúncio A')?.adset === 'Conjunto 1' && ad('Anúncio A')?.campaign === CAMP_ELVIS, `${ad('Anúncio A')?.adset}/${ad('Anúncio A')?.campaign}`);
+check('objetivo traduzido', camp(CAMP_ELVIS)?.obj === 'Alcance', camp(CAMP_ELVIS)?.obj);
+check('alcance da campanha vem do nível campanha (1100, não soma dos anúncios)', camp(CAMP_ELVIS)?.reach === 1100, camp(CAMP_ELVIS)?.reach);
+check('cpc calculado', Math.abs(camp(CAMP_ELVIS).adsets[0].creatives[0].cpc - 6) < 0.001, camp(CAMP_ELVIS).adsets[0].creatives[0].cpc);
+check('cliques totais só do que está na tela', b.clicks === 50, b.clicks);
+check('série diária ordenada e SEM o gasto da campanha fora do recorte', b.daily.length === 2 && b.daily[0].spend === 100.5 && b.daily[1].spend === 250.25, JSON.stringify(b.daily));
 check('período devolvido', !!(b.period.since && b.period.until), JSON.stringify(b.period));
 
-console.log('\n[4] contagens do que está no ar');
+console.log('\n[4] contagens do que está no ar (dentro do recorte)');
 check('campanhas ativas', b.activeCount === 1, b.activeCount);
 check('conjuntos ativos', b.activeAdsets === 1, b.activeAdsets);
-check('anúncios ativos', b.activeAds === 1, b.activeAds);
-check('ativos != listados (recortes diferentes)', b.activeAds !== b.ads.length, `${b.activeAds} vs ${b.ads.length}`);
+check('anúncios ativos', b.activeAds === 2, b.activeAds);
 check('token não vaza na resposta', !JSON.stringify(b).includes('access_token') && !JSON.stringify(b).includes('EAA'), 'vazou');
 
 console.log('\n[4b] vídeos somados por cidade');
@@ -129,7 +133,7 @@ console.log('\n[4b] vídeos somados por cidade');
     const p = url.pathname;
     const fields = url.searchParams.get('fields') || '';
     if (p.endsWith('/me/accounts')) return ok([]);
-    if (p.endsWith('/campaigns')) return ok([{ id: 'cX', name: 'Reconhecimento', objective: 'OUTCOME_AWARENESS', effective_status: 'ACTIVE' }]);
+    if (p.endsWith('/campaigns')) return ok([{ id: 'cX', name: '[WESLEY][Eleitoral 2026][Reconhecimento] Base Oeste — 5 pracas', objective: 'OUTCOME_AWARENESS', effective_status: 'ACTIVE' }]);
     if (p.endsWith('/adsets')) return ok([
       { id: 'sA', name: '[W][Cidade A]', campaign_id: 'cX', effective_status: 'ACTIVE' },
       { id: 'sB', name: '[W][Cidade B]', campaign_id: 'cX', effective_status: 'ACTIVE' },
@@ -149,8 +153,8 @@ console.log('\n[4b] vídeos somados por cidade');
     ]);
     return ok([]);
   };
-  r = await run(ENV, { account: 'wesley2026' });
-  check('conta Wesley 2026 existe e responde', r.code === 200 && r.body.account === 'Wesley 2026', r.code + ' ' + r.body?.account);
+  r = await run(ENV, { account: 'wesley' });
+  check('conta Wesley (eleitoral 2026) responde', r.code === 200 && r.body.account === 'Wesley', r.code + ' ' + r.body?.account);
   const vs = r.body.videos;
   check('só agrupa nome repetido em cidades DISTINTAS', vs.length === 1 && vs[0].name === 'Video X', JSON.stringify(vs?.map((v) => v.name)));
   const v = vs[0];
