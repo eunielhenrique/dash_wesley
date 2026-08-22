@@ -114,6 +114,55 @@ check('anúncios ativos', b.activeAds === 1, b.activeAds);
 check('ativos != listados (recortes diferentes)', b.activeAds !== b.ads.length, `${b.activeAds} vs ${b.ads.length}`);
 check('token não vaza na resposta', !JSON.stringify(b).includes('access_token') && !JSON.stringify(b).includes('EAA'), 'vazou');
 
+console.log('\n[4b] vídeos somados por cidade');
+{
+  const CITY_ADS = [
+    { id: 'v1', name: '[W][Cidade A] Video X', adset_id: 'sA', campaign_id: 'cX', effective_status: 'ACTIVE' },
+    { id: 'v2', name: '[W][Cidade B] Video X', adset_id: 'sB', campaign_id: 'cX', effective_status: 'ACTIVE' },
+    { id: 'v3', name: '[W][Cidade C] Video X', adset_id: 'sC', campaign_id: 'cX', effective_status: 'ACTIVE' },
+    { id: 'v4', name: '[W][Cidade A] Video Y', adset_id: 'sA', campaign_id: 'cX', effective_status: 'ACTIVE' },
+    { id: 'v5', name: '[W][Cidade A] Video Y', adset_id: 'sA', campaign_id: 'cX', effective_status: 'ACTIVE' },
+    { id: 'v6', name: 'Anúncio solto', adset_id: 'sA', campaign_id: 'cX', effective_status: 'ACTIVE' },
+  ];
+  globalThis.fetch = async (u) => {
+    const url = new URL(u);
+    const p = url.pathname;
+    const fields = url.searchParams.get('fields') || '';
+    if (p.endsWith('/me/accounts')) return ok([]);
+    if (p.endsWith('/campaigns')) return ok([{ id: 'cX', name: 'Reconhecimento', objective: 'OUTCOME_AWARENESS', effective_status: 'ACTIVE' }]);
+    if (p.endsWith('/adsets')) return ok([
+      { id: 'sA', name: '[W][Cidade A]', campaign_id: 'cX', effective_status: 'ACTIVE' },
+      { id: 'sB', name: '[W][Cidade B]', campaign_id: 'cX', effective_status: 'ACTIVE' },
+      { id: 'sC', name: '[W][Cidade C]', campaign_id: 'cX', effective_status: 'ACTIVE' },
+    ]);
+    if (p.endsWith('/ads') && fields.includes('creative')) return ok(CITY_ADS.map((a) => ({
+      id: a.id, creative: { body: 'Primeira frase da copy!\nSegunda linha.', thumbnail_url: 'https://cdn.example/' + a.id + '.jpg' },
+    })));
+    if (p.endsWith('/ads')) return ok(CITY_ADS);
+    if (url.searchParams.get('level') === 'ad' && !url.searchParams.get('breakdowns')) return ok([
+      { ad_id: 'v1', spend: '40.00', impressions: '10000', reach: '9000', clicks: '10' },
+      { ad_id: 'v2', spend: '6.00', impressions: '1000', reach: '900', clicks: '5' },
+      { ad_id: 'v3', spend: '3.00', impressions: '100', reach: '90', clicks: '3' },
+      { ad_id: 'v4', spend: '10.00', impressions: '2000', reach: '1800', clicks: '2' },
+      { ad_id: 'v5', spend: '10.00', impressions: '2000', reach: '1800', clicks: '2' },
+      { ad_id: 'v6', spend: '5.00', impressions: '500', reach: '450', clicks: '1' },
+    ]);
+    return ok([]);
+  };
+  r = await run(ENV, { account: 'wesley2026' });
+  check('conta Wesley 2026 existe e responde', r.code === 200 && r.body.account === 'Wesley 2026', r.code + ' ' + r.body?.account);
+  const vs = r.body.videos;
+  check('só agrupa nome repetido em cidades DISTINTAS', vs.length === 1 && vs[0].name === 'Video X', JSON.stringify(vs?.map((v) => v.name)));
+  const v = vs[0];
+  check('métricas somadas das cidades', v.spend === 49 && v.imp === 11100 && v.clicks === 18 && v.reach === 9990, JSON.stringify({ s: v.spend, i: v.imp, c: v.clicks, r: v.reach }));
+  check('copy = primeira frase do creative.body', v.copy === 'Primeira frase da copy!', v.copy);
+  check('thumb herdada do anúncio com mais impressões', v.thumb === 'https://cdn.example/v1.jpg', v.thumb);
+  check('maior CTR ignora cidade com pouca impressão (C tem 3% em 100 imp)', v.bestCtr.city === 'Cidade B', JSON.stringify(v.bestCtr));
+  check('menor CPM entre as elegíveis', v.lowCpm.city === 'Cidade A' && Math.abs(v.lowCpm.cpm - 4) < 0.001, JSON.stringify(v.lowCpm));
+  check('cidades ordenadas por gasto, com ctr e cpm prontos', v.cities[0].city === 'Cidade A' && Math.abs(v.cities[1].cpm - 6) < 0.001, JSON.stringify(v.cities));
+  check('anúncio fora do padrão [TAG][Cidade] fica fora do agrupamento', !JSON.stringify(vs).includes('Anúncio solto'), 'entrou');
+}
+
 console.log('\n[5] erro da Graph API');
 globalThis.fetch = async () => ({ ok: false, status: 400, json: async () => ({ error: { message: 'Invalid OAuth access token' } }) });
 r = await run({ ...ENV, META_ACCESS_TOKEN: 'ruim' }, { account: 'elvis' });

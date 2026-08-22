@@ -42,7 +42,7 @@ check('selo não repete a contagem de linhas da tabela', d.getElementById('dActi
 check('campanha pausada marcada na tabela', [...d.querySelectorAll('.trow .obj')].filter(e=>e.textContent==='Pausada').length===2, [...d.querySelectorAll('.trow .obj')].map(e=>e.textContent).join(','));
 check('tabela avisa que o recorte é entrega no período', /Com entrega no período/.test(d.querySelector('.thead2 small').textContent), d.querySelector('.thead2 small').textContent);
 check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
-check('contas do menu = Elvis e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Elvis/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
+check('contas do menu = Elvis, Wesley e Wesley 2026', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Elvis/Wesley/Wesley 2026', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
 check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Elvis', d.getElementById('acctName').textContent);
 check('rodapé nomeia a conta certa', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('vídeo real renderizado nos cards que têm MP4', d.querySelectorAll('.media video.vid').length===4, d.querySelectorAll('.media video.vid').length);
@@ -65,6 +65,21 @@ check('card não repete campanha e conjunto', d.querySelectorAll('.names .c').le
   check('árvore do desktop mostra a imagem real do criativo', d.querySelectorAll('.cr img.thumb').length === 1, d.querySelectorAll('.cr img.thumb').length);
   check('criativo sem imagem mantém o quadro cinza', d.querySelectorAll('.cr div.thumb').length === 1, d.querySelectorAll('.cr div.thumb').length);
   check('nomes da árvore sem a nomenclatura', !/\[GOV360\]|\[WESLEY\]/.test(tree), (tree.match(/\[[A-Z0-9]+\]/g)||[]).slice(0,3).join(','));
+}
+console.log('\n[A1] vídeos somados por cidade');
+{
+  check('seção aparece no desktop e no mobile', d.getElementById('dVideos').style.display==='' && d.getElementById('mVideos').style.display==='', `${d.getElementById('dVideos').style.display}/${d.getElementById('mVideos').style.display}`);
+  const vcards = d.querySelectorAll('#dVgrid .vcard');
+  check('um card por vídeo agrupado', vcards.length===2, vcards.length);
+  check('primeira frase da copy no card', /Alguém compra com mesmo Salário/.test(vcards[0].textContent), vcards[0].querySelector('.vcopy')?.textContent);
+  check('vídeo sem copy não mostra aspas vazias', !vcards[1].querySelector('.vcopy'), vcards[1].querySelector('.vcopy')?.textContent);
+  check('selo de maior CTR nomeia a cidade', /Maior CTR: Santana de Parnaíba/.test(vcards[0].textContent), vcards[0].querySelector('.vchip.ctr')?.textContent);
+  check('selo de menor CPM nomeia a cidade', /Menor CPM: Jandira/.test(vcards[0].textContent), vcards[0].querySelector('.vchip.cpm')?.textContent);
+  check('sem cidade elegível, card fica sem selo em vez de inventar', vcards[1].querySelectorAll('.vchip').length===0, vcards[1].querySelectorAll('.vchip').length);
+  check('detalhe lista as cidades do vídeo', /Barueri/.test(vcards[0].querySelector('.vcities').textContent), vcards[0].querySelector('.vcities')?.textContent.slice(0,60));
+  check('vídeo pausado marcado no card', /Pausado/.test(vcards[1].textContent), 'sem selo');
+  check('thumbnail real quando existe, quadro cinza quando não', !!vcards[0].querySelector('img.vthumb') && !!vcards[1].querySelector('div.vthumb'), 'mídia errada');
+  check('cards de vídeo não inflam a contagem de anúncios', d.querySelectorAll('.card').length===6, d.querySelectorAll('.card').length);
 }
 check('nenhum NaN/Infinity/undefined na tela', !/NaN|Infinity|undefined/.test(txt), (txt.match(/NaN|Infinity|undefined/g)||[]).join(','));
 check('CPC/CPM do desktop calculado dos cliques reais', /8\.942 cliques/.test(txt), 'cliques');
@@ -102,6 +117,7 @@ console.log('\n[A2] atualização automática');
 console.log('\n[B] API indisponível (sem token)');
 d = await boot({ apiOk:false });
 check('não mostra card nenhum', d.querySelectorAll('.card').length===0, d.querySelectorAll('.card').length);
+check('sem dado, seção de vídeos fica escondida', d.getElementById('dVideos').style.display==='none' && d.getElementById('mVideos').style.display==='none', `${d.getElementById('dVideos').style.display}/${d.getElementById('mVideos').style.display}`);
 check('rodapé explica a falha', /Não foi possível carregar: META_ACCESS_TOKEN/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('trilho mostra estado honesto', /Não foi possível carregar/.test(d.getElementById('rail').textContent), d.getElementById('rail').textContent.slice(0,60));
 check('sem dado, rodapé desktop explica em vez de mostrar data', /Não foi possível carregar/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);

@@ -373,5 +373,67 @@
  ],
  "activeCount": 2,
  "activeAdsets": 3,
- "activeAds": 4
+ "activeAds": 4,
+ "videos": [
+  {
+   "name": "Salario",
+   "copy": "Alguém compra com mesmo Salário que comprava em Janeiro ???",
+   "thumb": "https://cdn.example/vs.jpg",
+   "video": null,
+   "active": true,
+   "spend": 246.84,
+   "imp": 61718,
+   "reach": 59438,
+   "clicks": 74,
+   "cities": [
+    {
+     "city": "Barueri",
+     "spend": 124.3,
+     "imp": 33061,
+     "clicks": 30,
+     "ctr": 0.09,
+     "cpm": 3.76
+    },
+    {
+     "city": "Santana de Parnaíba",
+     "spend": 48.95,
+     "imp": 8977,
+     "clicks": 38,
+     "ctr": 0.42,
+     "cpm": 5.45
+    }
+   ],
+   "bestCtr": {
+    "city": "Santana de Parnaíba",
+    "ctr": 0.42
+   },
+   "lowCpm": {
+    "city": "Jandira",
+    "cpm": 3.11
+   }
+  },
+  {
+   "name": "Carreata",
+   "copy": null,
+   "thumb": null,
+   "video": null,
+   "active": false,
+   "spend": 129.99,
+   "imp": 31905,
+   "reach": 29147,
+   "clicks": 47,
+   "cities": [
+    {
+     "city": "Barueri",
+     "spend": 49.51,
+     "imp": 13506,
+     "clicks": 19,
+     "ctr": 0.14,
+     "cpm": 3.67
+    }
+   ],
+   "bestCtr": null,
+   "lowCpm": null
+  }
+ ]
 }

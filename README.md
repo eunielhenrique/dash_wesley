@@ -106,8 +106,32 @@ variável de ambiente não vai para o Git.
 |---|---|
 | **Elvis** | `act_531444469411947` (GOV360) |
 | **Wesley** | `act_902191367681121` (WESLEY CEZAR) |
+| **Wesley 2026** | `act_1225213654864267` (CAMPANHA ELEITORAL WESLEY CEZAR - 2026) |
 
-O valor `gov360` segue aceito como alias de `elvis` na querystring.
+O valor `gov360` segue aceito como alias de `elvis` na querystring, e
+`META_AD_ACCOUNT_WESLEY_2026` sobrescreve o ID da conta de 2026.
+
+### Vídeos somados por cidade
+
+O mesmo vídeo replicado em conjuntos geográficos (`[TAG][Cidade] Nome`) vira
+**uma linha somada** — o total que o Gerenciador não mostra. A API agrupa
+anúncios cujo nome repete em **cidades distintas** (2+), soma gasto, impressões,
+alcance e cliques, e devolve em `videos[]` junto com:
+
+- a **primeira frase da copy** (`creative{body}`) e a thumbnail do anúncio de
+  maior entrega, para identificar o criativo de vista;
+- a cidade de **maior CTR** e a de **menor CPM**, ignorando cidade com menos de
+  500 impressões (3 cliques em 100 impressões não é liderança, é ruído). Sem
+  nenhuma cidade elegível, os selos ficam de fora em vez de inventar líder.
+
+Alcance somado entre cidades vale porque cada conjunto mira um público
+geográfico distinto. CTR aqui é cliques totais ÷ impressões — campanha de
+reconhecimento quase não tem clique em link.
+
+Na tela, a seção "Vídeos somados por cidade" aparece entre os gráficos e a
+tabela de campanhas (desktop) e depois do trilho de anúncios (mobile), com o
+detalhe por cidade recolhido em cada card. Contas sem anúncios nesse padrão
+não mostram a seção.
 
 ### Atualização
 

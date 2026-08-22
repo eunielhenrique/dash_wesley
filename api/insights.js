@@ -14,6 +14,7 @@ const API = 'https://graph.facebook.com/v20.0';
 const ACCOUNTS = {
   elvis: { label: 'Elvis', env: ['META_AD_ACCOUNT_ELVIS', 'META_AD_ACCOUNT_GOV360'], id: 'act_531444469411947' },
   wesley: { label: 'Wesley', env: ['META_AD_ACCOUNT_WESLEY'], id: 'act_902191367681121' },
+  wesley2026: { label: 'Wesley 2026', env: ['META_AD_ACCOUNT_WESLEY_2026'], id: 'act_1225213654864267' },
 };
 ACCOUNTS.gov360 = ACCOUNTS.elvis;   // a conta Gov360 é a do Elvis; alias mantido
 
@@ -94,7 +95,7 @@ async function creativeMedia(actId, token) {
   let rows;
   try {
     rows = await graph(`/${actId}/ads`, {
-      fields: 'id,creative{thumbnail_url,image_url,video_id,effective_object_story_id}',
+      fields: 'id,creative{body,thumbnail_url,image_url,video_id,effective_object_story_id}',
       limit: '500',
     }, token);
   } catch {
@@ -104,7 +105,7 @@ async function creativeMedia(actId, token) {
   const videos = [];
   for (const r of rows) {
     const c = r.creative || {};
-    media[r.id] = { thumb: c.thumbnail_url || c.image_url || null, video: null };
+    media[r.id] = { thumb: c.thumbnail_url || c.image_url || null, video: null, body: c.body || null };
     if (c.video_id) {
       videos.push({ adId: r.id, videoId: c.video_id, pageId: String(c.effective_object_story_id || '').split('_')[0] });
     }
@@ -159,6 +160,48 @@ async function creativeMedia(actId, token) {
   }));
 
   return media;
+}
+
+// O mesmo vídeo replicado em conjuntos por cidade ([TAG][Cidade] Nome) vira UMA
+// linha somada — o total que o Gerenciador não mostra. Alcance somado vale aqui
+// porque cada conjunto mira um público geográfico distinto. A "melhor cidade"
+// (CTR/CPM) ignora cidade com menos de 500 impressões: 3 cliques em 100
+// impressões não é liderança, é ruído.
+const MIN_IMP_CIDADE = 500;
+function groupVideos(ads, media) {
+  const groups = {};
+  for (const a of ads) {
+    const m = /^((?:\[[^\]]+\])*)\[([^\]]+)\]\s*(\S.*)$/.exec(a.name);
+    if (!m) continue;
+    const g = (groups[m[1] + '|' + m[3]] ||= { name: m[3], cities: [] });
+    g.cities.push({ city: m[2], spend: a.spend, imp: a.imp, reach: a.reach, clicks: a.clicks, ad: a });
+  }
+  return Object.values(groups)
+    .filter((g) => new Set(g.cities.map((c) => c.city)).size >= 2)
+    .map((g) => {
+      const sum = (k) => g.cities.reduce((s, c) => s + c[k], 0);
+      const spend = sum('spend'), imp = sum('imp'), reach = sum('reach'), clicks = sum('clicks');
+      const lead = [...g.cities].sort((a, b) => b.imp - a.imp)[0].ad;
+      const body = media[lead.id]?.body || g.cities.map((c) => media[c.ad.id]?.body).find(Boolean) || null;
+      const elegiveis = g.cities.filter((c) => c.imp >= MIN_IMP_CIDADE);
+      const pool = elegiveis.length ? elegiveis : g.cities.filter((c) => c.imp > 0);
+      const bestCtr = pool.length ? [...pool].sort((a, b) => b.clicks / b.imp - a.clicks / a.imp)[0] : null;
+      const lowCpm = pool.length ? [...pool].sort((a, b) => a.spend / a.imp - b.spend / b.imp)[0] : null;
+      return {
+        name: g.name,
+        copy: body ? body.trim().split('\n')[0].trim() : null,
+        thumb: lead.thumb, video: lead.video,
+        active: g.cities.some((c) => c.ad.active),
+        spend, imp, reach, clicks,
+        cities: g.cities
+          .map((c) => ({ city: c.city, spend: c.spend, imp: c.imp, clicks: c.clicks,
+            ctr: c.imp ? c.clicks / c.imp * 100 : 0, cpm: c.imp ? c.spend / c.imp * 1000 : 0 }))
+          .sort((a, b) => b.spend - a.spend),
+        bestCtr: bestCtr ? { city: bestCtr.city, ctr: bestCtr.clicks / bestCtr.imp * 100 } : null,
+        lowCpm: lowCpm ? { city: lowCpm.city, cpm: lowCpm.spend / lowCpm.imp * 1000 } : null,
+      };
+    })
+    .sort((a, b) => b.spend - a.spend);
 }
 
 export default async function handler(req, res) {
@@ -318,6 +361,7 @@ export default async function handler(req, res) {
       activeAdsets,
       activeAds,
       ads,
+      videos: groupVideos(ads, media),
       camps,
       daily,
     });
