@@ -57,6 +57,8 @@ check('card não tem mais chavinha', d.querySelectorAll('.sw').length===0, d.que
 check('card não tem mais bloco de CPR', d.querySelectorAll('.hero').length===0, d.querySelectorAll('.hero').length);
 check('card mostra só o nome do criativo, sem a nomenclatura', d.querySelector('.names .n').textContent==='Anúncio 1 — criativo de vídeo', d.querySelector('.names .n').textContent);
 check('card não repete campanha e conjunto', d.querySelectorAll('.names .c').length===0, d.querySelectorAll('.names .c').length);
+check('anúncio com praça no nome ganha o chip da cidade', [...d.querySelectorAll('.card .citytag')].some(e=>e.textContent==='Barueri'), [...d.querySelectorAll('.card .citytag')].map(e=>e.textContent).join(','));
+check('anúncio sem praça (uma tag só) fica sem chip', !d.querySelector('.card')?.querySelector('.citytag'), d.querySelector('.card')?.querySelector('.citytag')?.textContent);
 // a árvore (conjuntos/anúncios) só existe com a campanha expandida
 {
   const row = d.querySelector('.trow[data-c="2"]');   // camps[2] está pausada na fixture
