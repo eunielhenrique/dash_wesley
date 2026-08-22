@@ -164,6 +164,7 @@ console.log('\n[4b] vídeos somados por cidade');
   check('maior CTR ignora cidade com pouca impressão (C tem 3% em 100 imp)', v.bestCtr.city === 'Cidade B', JSON.stringify(v.bestCtr));
   check('menor CPM entre as elegíveis', v.lowCpm.city === 'Cidade A' && Math.abs(v.lowCpm.cpm - 4) < 0.001, JSON.stringify(v.lowCpm));
   check('cidades ordenadas por gasto, com ctr e cpm prontos', v.cities[0].city === 'Cidade A' && Math.abs(v.cities[1].cpm - 6) < 0.001, JSON.stringify(v.cities));
+  check('cada cidade traz o alcance (pros chips de líder)', v.cities[0].reach === 9000, JSON.stringify(v.cities[0]));
   check('anúncio fora do padrão [TAG][Cidade] fica fora do agrupamento', !JSON.stringify(vs).includes('Anúncio solto'), 'entrou');
 }
 

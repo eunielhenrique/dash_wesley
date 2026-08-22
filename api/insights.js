@@ -204,7 +204,7 @@ function groupVideos(ads, media) {
         active: g.cities.some((c) => c.ad.active),
         spend, imp, reach, clicks,
         cities: g.cities
-          .map((c) => ({ city: c.city, spend: c.spend, imp: c.imp, clicks: c.clicks,
+          .map((c) => ({ city: c.city, spend: c.spend, imp: c.imp, reach: c.reach, clicks: c.clicks,
             ctr: c.imp ? c.clicks / c.imp * 100 : 0, cpm: c.imp ? c.spend / c.imp * 1000 : 0 }))
           .sort((a, b) => b.spend - a.spend),
         bestCtr: bestCtr ? { city: bestCtr.city, ctr: bestCtr.clicks / bestCtr.imp * 100 } : null,

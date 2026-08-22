@@ -79,8 +79,9 @@ div.vthumb{display:flex;align-items:center;justify-content:center;color:#7c828a;
 .vmx .l{font-size:10px;color:#7c828a;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
 .vmx .v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px;margin-top:1px;white-space:nowrap}
 .vchips{display:flex;gap:6px;flex-wrap:wrap}
-.vchip{font-size:11px;font-weight:600;border-radius:100px;padding:4px 10px;white-space:nowrap}
-.vchip.cpm{background:#05b16914;color:#037a49;border:1px solid #05b16940}
+.vchip{font-size:11px;font-weight:600;border-radius:100px;padding:4px 10px;white-space:nowrap;background:#eef0f3;color:#5b616e;border:1px solid #dee1e6}
+.vchip.hot{background:#cf202f14;color:#cf202f;border-color:#cf202f40}
+.vchip.cpm{background:#05b16914;color:#037a49;border-color:#05b16940}
 .vcities{font-size:12px}
 .vcities summary{cursor:pointer;color:#5b616e;font-weight:600;list-style:none}
 .vcities summary::before{content:'▸ '}
@@ -261,7 +262,16 @@ function cards(){
 function videoCard(v){
   const ctr=v.imp?v.clicks/v.imp*100:0,cpm=v.imp?v.spend/v.imp*1000:0;
   const m=[['Gasto',brl(v.spend)],['Alcance',int(v.reach)],['Impressões',int(v.imp)],['Cliques',int(v.clicks)],['CTR',pct(ctr)],['CPM',v.imp?brl(cpm):'—']];
-  const chips=v.lowCpm?`<span class="vchip cpm">Menor CPM: ${esc(v.lowCpm.city)} · ${brl(v.lowCpm.cpm)}</span>`:'';
+  // líderes por praça: com uma cidade só não há "maior" — chips ficam de fora
+  const top=(k)=>v.cities.reduce((a,c)=>c[k]>a[k]?c:a,v.cities[0]);
+  const lider=v.cities.length>1?[
+    ['Maior gasto',top('spend'),c=>brl(c.spend),''],
+    ['Maior alcance',top('reach'),c=>int(c.reach||0),''],
+    ['Mais impressões',top('imp'),c=>int(c.imp),''],
+    ['Mais cliques',top('clicks'),c=>int(c.clicks),''],
+    ['Maior CPM',top('cpm'),c=>brl(c.cpm),' hot'],
+  ].map(([l,c,f,cl])=>`<span class="vchip${cl}">${l}: ${esc(c.city)} · ${f(c)}</span>`).join(''):'';
+  const chips=lider+(v.lowCpm?`<span class="vchip cpm">Menor CPM: ${esc(v.lowCpm.city)} · ${brl(v.lowCpm.cpm)}</span>`:'');
   const rows=v.cities.map(c=>`<div class="vcrow"><span>${esc(c.city)}</span><span class="num">${brl(c.spend)}</span><span class="num">${pct(c.ctr)}</span><span class="num">${c.imp?brl(c.cpm):'—'}</span></div>`).join('');
   return `<article class="vcard">
     ${v.thumb?`<img class="vthumb" src="${v.thumb}" alt="" loading="lazy">`:'<div class="vthumb">criativo</div>'}

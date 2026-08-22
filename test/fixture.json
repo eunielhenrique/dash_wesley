@@ -392,7 +392,8 @@
      "imp": 33061,
      "clicks": 30,
      "ctr": 0.09,
-     "cpm": 3.76
+     "cpm": 3.76,
+     "reach": 32000
     },
     {
      "city": "Santana de Parnaíba",
@@ -400,7 +401,8 @@
      "imp": 8977,
      "clicks": 38,
      "ctr": 0.42,
-     "cpm": 5.45
+     "cpm": 5.45,
+     "reach": 8500
     }
    ],
    "bestCtr": {
@@ -429,7 +431,8 @@
      "imp": 13506,
      "clicks": 19,
      "ctr": 0.14,
-     "cpm": 3.67
+     "cpm": 3.67,
+     "reach": 13000
     }
    ],
    "bestCtr": null,
