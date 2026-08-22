@@ -26,14 +26,11 @@ a{color:#0052ff;text-decoration:none}a:hover{color:#003ecc}
 .rf.busy svg{animation:rfspin .9s linear infinite;transform-origin:50% 50%}
 @keyframes rfspin{to{transform:rotate(360deg)}}
 .desk .rf{background:#fff;border:1px solid #dee1e6;padding:8px 14px;font-size:13.5px;color:#5b616e}
-.menu{position:absolute;top:64px;left:20px;background:#fff;border:1px solid #dee1e6;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:6px;min-width:180px;z-index:20;display:none;flex-direction:column;gap:2px}
-.menu.open{display:flex}
-.mi{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer}
-.mi:hover{background:#eef0f3}
-.mi .av{width:28px;height:28px;border-radius:9999px;background:#eef0f3;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
-.mi.sel{background:#eef0f3}.mi.sel .av{background:#0052ff;color:#fff}
-.mi span{font-size:14px}.mi.sel span{font-weight:600}
-.mi svg{margin-left:auto;display:none}.mi.sel svg{display:block}
+.accsw{display:flex;gap:6px;background:#eef0f3;border-radius:100px;padding:3px}
+.acc{border:none;background:transparent;border-radius:100px;padding:6px 16px;font-family:Inter,sans-serif;font-size:13px;font-weight:600;color:#5b616e;cursor:pointer}
+.acc.sel{background:#0052ff;color:#fff;box-shadow:0 1px 4px #0052ff40}
+.desk .accsw{padding:4px}
+.desk .acc{padding:7px 18px;font-size:13.5px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .kpi{background:#fff;border:1px solid #dee1e6;border-radius:16px;padding:10px 10px 9px}
 .kpi .l{font-size:10px;color:#7c828a;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
@@ -149,18 +146,15 @@ img.cr-x,.cr img.thumb{object-fit:cover;display:block}
 <div class="app">
 <header>
   <div class="hrow">
-    <div class="acct" id="acctBtn">
+    <div class="acct">
       <div class="avatar" id="acctAv">E</div>
-      <div>
-        <div class="title">Meta Ads</div>
-        <div class="sub"><span id="acctName">Elvis</span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5b616e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </div>
-      </div>
+      <div class="title">Meta Ads</div>
     </div>
-    <button class="rf" id="mRefresh" type="button" aria-label="Atualizar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="accsw" id="accsw"></div>
+      <button class="rf" id="mRefresh" type="button" aria-label="Atualizar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+    </div>
   </div>
-  <div class="menu" id="menu"></div>
   <div class="kpis" id="kpis"></div>
 </header>
 <main>
@@ -184,6 +178,7 @@ img.cr-x,.cr img.thumb{object-fit:cover;display:block}
       </div>
     </div>
     <div class="hright">
+      <div class="accsw" id="dAccsw"></div>
       <button class="rf" id="dRefresh" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>Atualizar</button>
       <div class="activebadge" id="dActive">—</div>
     </div>
@@ -286,9 +281,11 @@ function videosSec(){
   document.getElementById('dVgrid').innerHTML=h;
   document.getElementById('mVgrid').innerHTML=h;
 }
-function menu(){
-  document.getElementById('menu').innerHTML=ACCOUNTS.map(n=>`<div class="mi${n===account?' sel':''}" data-acc="${n}"><div class="av">${n[0]}</div><span>${n}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>`).join('');
-  document.getElementById('acctName').textContent=account;
+/* seletor de conta: dois chips sempre visíveis (decisão do dono — sem dropdown) */
+function accsw(){
+  const h=ACCOUNTS.map(n=>`<button type="button" class="acc${n===account?' sel':''}" data-acc="${n}">${n}</button>`).join('');
+  document.getElementById('accsw').innerHTML=h;
+  document.getElementById('dAccsw').innerHTML=h;
   document.getElementById('acctAv').textContent=account[0];
   document.getElementById('dAcct').textContent=account;
 }
@@ -344,7 +341,7 @@ function chrome(){
   document.getElementById('dNote').textContent=note;
   document.getElementById('dStamp').textContent=loading||loadError?'':'Atualizado em '+new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
 }
-function render(){kpis();cards();videosSec();menu();dkpis();chart();shares();table();chrome()}
+function render(){kpis();cards();videosSec();accsw();dkpis();chart();shares();table();chrome()}
 let buscando=false;                       // requisição em voo (loading já nasce true p/ a tela)
 async function load(){
   if(buscando)return;                     // não empilha buscas
@@ -361,10 +358,8 @@ async function load(){
 /* events */
 document.addEventListener('click',e=>{
   if(e.target.closest('.rf')){load();return}
-  if(e.target.closest('#acctBtn')){document.getElementById('menu').classList.toggle('open');return}
-  const mi=e.target.closest('.mi');
-  if(mi){account=mi.dataset.acc;localStorage.setItem('ma-account',account);document.getElementById('menu').classList.remove('open');load();return}
-  if(!e.target.closest('#menu'))document.getElementById('menu').classList.remove('open');
+  const chip=e.target.closest('.acc');
+  if(chip){if(chip.dataset.acc!==account){account=chip.dataset.acc;localStorage.setItem('ma-account',account);load()}return}
   const tr=e.target.closest('.trow:not(.hd)');
   if(tr){const i=tr.dataset.c;open[i]=!open[i];table();return}
   const media=e.target.closest('.media[data-pick]');

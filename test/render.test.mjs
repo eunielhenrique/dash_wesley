@@ -42,8 +42,10 @@ check('selo não repete a contagem de linhas da tabela', d.getElementById('dActi
 check('campanha pausada marcada na tabela', [...d.querySelectorAll('.trow .obj')].filter(e=>e.textContent==='Pausada').length===2, [...d.querySelectorAll('.trow .obj')].map(e=>e.textContent).join(','));
 check('tabela avisa que o recorte é entrega no período', /Com entrega no período/.test(d.querySelector('.thead2 small').textContent), d.querySelector('.thead2 small').textContent);
 check('rodapé diz dado real, não "dados de exemplo"', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
-check('contas do menu = Elvis e Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/')==='Elvis/Wesley', [...d.querySelectorAll('.mi span')].map(e=>e.textContent).join('/'));
-check('nome da conta no cabeçalho', d.getElementById('acctName').textContent==='Elvis', d.getElementById('acctName').textContent);
+check('seletor de conta = dois chips visíveis, sem dropdown', [...d.querySelectorAll('#accsw .acc')].map(e=>e.textContent).join('/')==='Elvis/Wesley' && !d.getElementById('menu'), [...d.querySelectorAll('#accsw .acc')].map(e=>e.textContent).join('/'));
+check('chips também no desktop', [...d.querySelectorAll('#dAccsw .acc')].map(e=>e.textContent).join('/')==='Elvis/Wesley', [...d.querySelectorAll('#dAccsw .acc')].map(e=>e.textContent).join('/'));
+check('chip da conta atual marcado', d.querySelector('#accsw .acc.sel')?.textContent==='Elvis', d.querySelector('#accsw .acc.sel')?.textContent);
+check('avatar acompanha a conta', d.getElementById('acctAv').textContent==='E', d.getElementById('acctAv').textContent);
 check('rodapé nomeia a conta certa', /Dados reais da conta Elvis/.test(d.getElementById('dNote').textContent), d.getElementById('dNote').textContent);
 check('vídeo real renderizado nos cards que têm MP4', d.querySelectorAll('.media video.vid').length===4, d.querySelectorAll('.media video.vid').length);
 check('vídeo usa a thumbnail real como poster', d.querySelector('.media video.vid')?.getAttribute('poster')==='https://cdn.example/t0.jpg', d.querySelector('.media video.vid')?.getAttribute('poster'));
@@ -102,6 +104,19 @@ console.log('\n[A2] atualização automática');
   await new Promise(r => setTimeout(r, 120));
   check('botão dispara nova busca', calls === 2, calls);
   check('botão volta a ficar clicável ao terminar', !btn.disabled && !btn.classList.contains('busy'), `${btn.disabled}/${btn.className}`);
+
+  // trocar de conta pelo chip refaz a busca na conta certa; repetir o chip ativo não
+  let lastUrl = '';
+  w.fetch = (...a) => { calls++; lastUrl = String(a[0]); return realFetch(...a); };
+  const wchip = [...d.querySelectorAll('#accsw .acc')].find(c => c.textContent === 'Wesley');
+  wchip.dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+  await new Promise(r => setTimeout(r, 120));
+  check('chip troca a conta e refaz a busca', /account=wesley/.test(lastUrl), lastUrl);
+  check('chip ativo ganha o destaque', d.querySelector('#accsw .acc.sel')?.textContent === 'Wesley', d.querySelector('#accsw .acc.sel')?.textContent);
+  const antesChip = calls;
+  [...d.querySelectorAll('#accsw .acc')].find(c => c.textContent === 'Wesley').dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+  await new Promise(r => setTimeout(r, 120));
+  check('clicar no chip já selecionado não dispara busca', calls === antesChip, `${calls} vs ${antesChip}`);
 
   // com vídeo tocando, a atualização não pode cortar o play
   const vid = d.querySelector('video.vid');
