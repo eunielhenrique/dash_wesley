@@ -81,7 +81,6 @@ div.vthumb{display:flex;align-items:center;justify-content:center;color:#7c828a;
 .vchips{display:flex;gap:6px;flex-wrap:wrap}
 .vchip{font-size:11px;font-weight:600;border-radius:100px;padding:4px 10px;white-space:nowrap;background:#eef0f3;color:#5b616e;border:1px solid #dee1e6}
 .vchip.hot{background:#cf202f14;color:#cf202f;border-color:#cf202f40}
-.vcity{font-size:11px;font-weight:500;border-radius:100px;padding:3px 10px;white-space:nowrap;background:#f7f7f7;color:#a8acb3;border:1px solid #eef0f3}
 .vchip.cpm{background:#05b16914;color:#037a49;border-color:#05b16940}
 .vcities{font-size:12px}
 .vcities summary{cursor:pointer;color:#5b616e;font-weight:600;list-style:none}
@@ -273,7 +272,6 @@ function videoCard(v){
     ['Maior CPM',top('cpm'),c=>brl(c.cpm),' hot'],
   ].map(([l,c,f,cl])=>`<span class="vchip${cl}">${l}: ${esc(c.city)} · ${f(c)}</span>`).join(''):'';
   const chips=lider+(v.lowCpm?`<span class="vchip cpm">Menor CPM: ${esc(v.lowCpm.city)} · ${brl(v.lowCpm.cpm)}</span>`:'');
-  const praças=v.cities.length?`<div class="vchips">${v.cities.map(c=>`<span class="vcity">${esc(c.city)}</span>`).join('')}</div>`:'';
   const rows=v.cities.map(c=>`<div class="vcrow"><span>${esc(c.city)}</span><span class="num">${brl(c.spend)}</span><span class="num">${pct(c.ctr)}</span><span class="num">${c.imp?brl(c.cpm):'—'}</span></div>`).join('');
   return `<article class="vcard">
     ${v.thumb?`<img class="vthumb" src="${v.thumb}" alt="" loading="lazy">`:'<div class="vthumb">criativo</div>'}
@@ -281,7 +279,6 @@ function videoCard(v){
       <div class="vn">${esc(v.name)}${v.active?'':' <span class="obj" style="background:#fde8ea;color:#cf202f">Pausado</span>'}</div>
       ${v.copy?`<div class="vcopy">“${esc(v.copy)}”</div>`:''}
       <div class="vmx">${m.map(x=>`<div><div class="l">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('')}</div>
-      ${praças}
       <div class="vchips">${chips}</div>
       <details class="vcities"><summary>${v.cities.length} cidades</summary>
         <div class="vcrow hd"><span>Cidade</span><span class="num">Gasto</span><span class="num">CTR</span><span class="num">CPM</span></div>${rows}
