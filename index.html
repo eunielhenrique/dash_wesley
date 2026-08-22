@@ -74,13 +74,12 @@ div.vthumb{display:flex;align-items:center;justify-content:center;color:#7c828a;
 .vbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .vn{font-weight:600;font-size:15px;line-height:1.3}
 .vn .obj{margin-left:6px}
-.vcopy{font-size:12.5px;color:#5b616e;font-style:italic;background:#eef0f3;border-left:3px solid #0052ff;border-radius:0 8px 8px 0;padding:6px 10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vcopy{font-size:12.5px;color:#5b616e;font-style:italic;background:#eef0f3;border-left:3px solid #0052ff;border-radius:0 8px 8px 0;padding:6px 10px}
 .vmx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 8px}
 .vmx .l{font-size:10px;color:#7c828a;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
 .vmx .v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px;margin-top:1px;white-space:nowrap}
 .vchips{display:flex;gap:6px;flex-wrap:wrap}
 .vchip{font-size:11px;font-weight:600;border-radius:100px;padding:4px 10px;white-space:nowrap}
-.vchip.ctr{background:#0052ff14;color:#0052ff;border:1px solid #0052ff40}
 .vchip.cpm{background:#05b16914;color:#037a49;border:1px solid #05b16940}
 .vcities{font-size:12px}
 .vcities summary{cursor:pointer;color:#5b616e;font-weight:600;list-style:none}
@@ -262,10 +261,7 @@ function cards(){
 function videoCard(v){
   const ctr=v.imp?v.clicks/v.imp*100:0,cpm=v.imp?v.spend/v.imp*1000:0;
   const m=[['Gasto',brl(v.spend)],['Alcance',int(v.reach)],['Impressões',int(v.imp)],['Cliques',int(v.clicks)],['CTR',pct(ctr)],['CPM',v.imp?brl(cpm):'—']];
-  const chips=[
-    v.bestCtr?`<span class="vchip ctr">Maior CTR: ${esc(v.bestCtr.city)} · ${pct(v.bestCtr.ctr)}</span>`:'',
-    v.lowCpm?`<span class="vchip cpm">Menor CPM: ${esc(v.lowCpm.city)} · ${brl(v.lowCpm.cpm)}</span>`:'',
-  ].join('');
+  const chips=v.lowCpm?`<span class="vchip cpm">Menor CPM: ${esc(v.lowCpm.city)} · ${brl(v.lowCpm.cpm)}</span>`:'';
   const rows=v.cities.map(c=>`<div class="vcrow"><span>${esc(c.city)}</span><span class="num">${brl(c.spend)}</span><span class="num">${pct(c.ctr)}</span><span class="num">${c.imp?brl(c.cpm):'—'}</span></div>`).join('');
   return `<article class="vcard">
     ${v.thumb?`<img class="vthumb" src="${v.thumb}" alt="" loading="lazy">`:'<div class="vthumb">criativo</div>'}
