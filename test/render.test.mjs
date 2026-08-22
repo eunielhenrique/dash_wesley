@@ -71,6 +71,7 @@ check('card não repete campanha e conjunto', d.querySelectorAll('.names .c').le
 console.log('\n[A1] vídeos somados por cidade');
 {
   check('seção aparece no desktop e no mobile', d.getElementById('dVideos').style.display==='' && d.getElementById('mVideos').style.display==='', `${d.getElementById('dVideos').style.display}/${d.getElementById('mVideos').style.display}`);
+  check('no mobile, vídeos somados vêm ANTES dos anúncios individuais', !!(d.getElementById('mVideos').compareDocumentPosition(d.getElementById('rail')) & 4), 'ordem invertida');
   const vcards = d.querySelectorAll('#dVgrid .vcard');
   check('um card por vídeo agrupado', vcards.length===2, vcards.length);
   check('primeira frase da copy no card', /Alguém compra com mesmo Salário/.test(vcards[0].textContent), vcards[0].querySelector('.vcopy')?.textContent);
